@@ -1,6 +1,6 @@
 ﻿namespace DeliveryApp.Infrastructure;
 
-public class Settings
+public sealed class Settings
 {
     public string ConnectionString { get; set; }
     public string GeoServiceGrpcHost { get; set; }

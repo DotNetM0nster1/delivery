@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace DeliveryApp.Api;
 
-public class SettingsSetup : IConfigureOptions<Settings>
+public sealed class SettingsSetup : IConfigureOptions<Settings>
 {
     private readonly IConfiguration _configuration;
 
