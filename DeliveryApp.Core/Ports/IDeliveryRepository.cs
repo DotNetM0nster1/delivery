@@ -1,6 +1,6 @@
 ﻿namespace DeliveryApp.Core.Ports
 {
-    internal interface IRepositoryService
+    internal interface IDeliveryRepository
     {
     }
 }
