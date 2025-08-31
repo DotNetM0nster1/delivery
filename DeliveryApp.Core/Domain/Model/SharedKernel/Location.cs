@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using Primitives;
-using System.Runtime.CompilerServices;
 
 namespace DeliveryApp.Core.Domain.Model.SharedKernel
 {
@@ -44,6 +43,9 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
 
         public Result<int, Error> CalculateCurierDistanceToTargetLocation(Location target)
         {
+            if(target == null)
+                throw new ArgumentNullException(nameof(target));
+
             var stepsCountByCoordinateX = Math.Abs(X - target.X);
             var stepsCountByCoordinateY = Math.Abs(Y - target.Y);
 
