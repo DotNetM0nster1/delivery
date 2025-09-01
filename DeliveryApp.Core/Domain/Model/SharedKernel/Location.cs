@@ -18,14 +18,14 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         public int Y { get; }
 
         private const int MaxCoordinateValue = 10;
-        private const int MinCoordinateValue = 0;
+        private const int MinCoordinateValue = 1;
 
         public static Result<Location, Error> CreateLocation(int x, int y)
         {
-            if (x > MaxCoordinateValue || x <= MinCoordinateValue)
+            if (x > MaxCoordinateValue || x < MinCoordinateValue)
                 return GeneralErrors.ValueIsInvalid(nameof(x));
 
-            if (y > MaxCoordinateValue || y <= MinCoordinateValue)
+            if (y > MaxCoordinateValue || y < MinCoordinateValue)
                 return GeneralErrors.ValueIsInvalid(nameof(y));
 
             return new Location(x, y);
@@ -35,8 +35,8 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         {
             var random = new Random();
 
-            var randomX = random.Next(MinCoordinateValue + 1, MaxCoordinateValue + 1);
-            var randomY = random.Next(MinCoordinateValue + 1, MaxCoordinateValue + 1);
+            var randomX = random.Next(MinCoordinateValue, MaxCoordinateValue + 1);
+            var randomY = random.Next(MinCoordinateValue, MaxCoordinateValue + 1);
 
             return CreateLocation(randomX, randomY);
         }
