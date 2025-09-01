@@ -21,7 +21,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value); 
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value); 
 
             //Assert
             Assert.Equal(18, stepsCountResult);
@@ -41,7 +41,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value);
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
 
             //Assert
             Assert.Equal(9, stepsCountResult);
@@ -61,7 +61,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value);
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
 
             //Assert
             Assert.Equal(9, stepsCountResult);
@@ -80,7 +80,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value);
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
 
             //Assert
             Assert.Equal(7, stepsCountResult);
@@ -99,7 +99,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value);
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
 
             //Assert
             Assert.Equal(10, stepsCountResult);
@@ -118,7 +118,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value);
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
 
             //Assert
             Assert.Equal(1, stepsCountResult);
@@ -137,7 +137,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetLocation = Location.CreateLocation(targetX, targetY);
 
             //Act
-            var stepsCountResult = currentLocation.Value.CalculateCurierDistanceToTargetLocation(targetLocation.Value);
+            var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
 
             //Assert
             Assert.Equal(1, stepsCountResult);

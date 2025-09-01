@@ -41,13 +41,13 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
             return CreateLocation(randomX, randomY);
         }
 
-        public Result<int, Error> CalculateCurierDistanceToTargetLocation(Location target)
+        public Result<int, Error> CalculateDistanceToTargetLocation(Location targetLocation)
         {
-            if(target == null)
-                throw new ArgumentNullException(nameof(target));
+            if(targetLocation == null)
+                return GeneralErrors.ValueIsInvalid(nameof(targetLocation));
 
-            var stepsCountByCoordinateX = Math.Abs(X - target.X);
-            var stepsCountByCoordinateY = Math.Abs(Y - target.Y);
+            var stepsCountByCoordinateX = Math.Abs(X - targetLocation.X);
+            var stepsCountByCoordinateY = Math.Abs(Y - targetLocation.Y);
 
             var curierStepsCountByTargetLocation = stepsCountByCoordinateX + stepsCountByCoordinateY;
 
