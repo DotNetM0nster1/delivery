@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Primitives;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DeliveryApp.Core.Domain.Model.SharedKernel
 {
     public sealed class Location : ValueObject
     {
+        [ExcludeFromCodeCoverage]
         private Location() { }
 
         private Location(int x, int y)
