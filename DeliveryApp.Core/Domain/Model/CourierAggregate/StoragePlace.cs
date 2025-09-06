@@ -39,13 +39,13 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public Result<bool, Error> IsOrderCorrectForPutInStorage(
             Guid orderId, 
-            int itemsCount)
+            int orderVolume)
         {
             if (OrderId != null)
                 return GeneralErrors.ValueIsInvalid(nameof(orderId));
 
-            if (TotalVolume - itemsCount < 0)
-                return GeneralErrors.ValueIsInvalid(nameof(itemsCount));
+            if (orderVolume > TotalVolume)
+                return GeneralErrors.ValueIsInvalid(nameof(orderVolume));
 
             return true;
         }
