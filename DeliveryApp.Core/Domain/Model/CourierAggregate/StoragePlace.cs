@@ -9,22 +9,17 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         [ExcludeFromCodeCoverage]
         private StoragePlace() { }
 
-        private StoragePlace(string name, int capacity, Guid? orderId = null)
+        private StoragePlace(string name, int volume, Guid? orderId = null)
         { 
             Id = Guid.NewGuid();
             Name = name;
-            MaxCapacity = capacity;
+            TotalVolume = volume;
             OrderId = orderId;
         }
 
-        public static StoragePlace Backpack = CreateStorage("Backpack", 10).Value;
-        public static StoragePlace BikeRake = CreateStorage("Bike rake", 15).Value;
-        public static StoragePlace CarTrunk = CreateStorage("Car trunk", 100).Value;
-        public static StoragePlace MotobikeRake = CreateStorage("Motobike Rake", 20).Value;
-
         public string Name { get; }
 
-        public int MaxCapacity { get; private set; }
+        public int TotalVolume { get; private set; }
 
         public Guid? OrderId { get; private set; }
 
@@ -49,34 +44,34 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (OrderId != null)
                 return GeneralErrors.ValueIsInvalid(nameof(orderId));
 
-            if (MaxCapacity - itemsCount < 0)
+            if (TotalVolume - itemsCount < 0)
                 return GeneralErrors.ValueIsInvalid(nameof(itemsCount));
 
             return true;
         }
 
-        public Result<StoragePlace, Error> PutOrderInStorage(
+        public Result<UnitResult<Error>, Error> PutOrderInStorage(
             Guid orderId, 
             int itemsCount)
         {
-            var isOrderCorrect = IsOrderCorrectForPutInStorage(orderId, itemsCount).IsSuccess;
+            var isOrderCorrect = IsOrderCorrectForPutInStorage(orderId, itemsCount);
 
-            if (!isOrderCorrect)
+            if (!isOrderCorrect.IsSuccess)
                 return GeneralErrors.ValueIsInvalid(nameof(isOrderCorrect));
 
             OrderId = orderId;
 
-            return this;
+            return UnitResult.Success<Error>();
         }
 
-        public Result<StoragePlace, Error> OutputOrderOfStorage()
+        public Result<UnitResult<Error>, Error> OutputOrderOfStorage()
         {
             if(OrderId == null)
                 return GeneralErrors.ValueIsInvalid(nameof(OrderId));
 
             OrderId = null;
 
-            return this;
+            return UnitResult.Success<Error>();
         }
 
         private bool IsBusy() => OrderId != null;

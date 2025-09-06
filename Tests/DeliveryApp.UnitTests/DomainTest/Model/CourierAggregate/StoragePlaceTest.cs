@@ -203,7 +203,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate
             Assert.True(isInputtingOrderResult);
             Assert.True(storage.OrderId == orderId);
             Assert.True(storage.Name == name);
-            Assert.True(storage.MaxCapacity == itemsMaxCapacity);
+            Assert.True(storage.TotalVolume == itemsMaxCapacity);
         }
 
         [Fact]
