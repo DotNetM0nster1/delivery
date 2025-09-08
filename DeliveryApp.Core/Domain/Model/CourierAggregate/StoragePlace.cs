@@ -28,7 +28,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             int capacity, 
             Guid? orderId = null) 
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
                 return GeneralErrors.ValueIsInvalid(nameof(name));
 
             if (capacity <= 0)
