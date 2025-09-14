@@ -7,7 +7,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
     public class CreateRandomLocationTest
     {
         [Fact]
-        public void WhenCreatingRandomLocation_ThenResultShouldBeTrue()
+        public void WhenCreatingRandomLocation_ThenMethodShouldBeCreateRandomLocation()
         {
             List<bool> isSuccess = [];
             int counter = 100000;

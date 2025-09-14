@@ -22,7 +22,7 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         private const int MaxCoordinateValue = 10;
         private const int MinCoordinateValue = 1;
 
-        public static Result<Location, Error> CreateLocation(int x, int y)
+        public static Result<Location, Error> Create(int x, int y)
         {
             if (x > MaxCoordinateValue || x < MinCoordinateValue)
                 return GeneralErrors.ValueIsInvalid(nameof(x));
@@ -40,20 +40,20 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
             var randomX = random.Next(MinCoordinateValue, MaxCoordinateValue + 1);
             var randomY = random.Next(MinCoordinateValue, MaxCoordinateValue + 1);
 
-            return CreateLocation(randomX, randomY);
+            return Create(randomX, randomY);
         }
 
         public Result<int, Error> CalculateDistanceToTargetLocation(Location targetLocation)
         {
             if(targetLocation == null)
-                return GeneralErrors.ValueIsInvalid(nameof(targetLocation));
+                return GeneralErrors.ValueIsRequired(nameof(targetLocation));
 
             var stepsCountByCoordinateX = Math.Abs(X - targetLocation.X);
             var stepsCountByCoordinateY = Math.Abs(Y - targetLocation.Y);
 
-            var curierStepsCountByTargetLocation = stepsCountByCoordinateX + stepsCountByCoordinateY;
+            var courierStepsCountByTargetLocation = stepsCountByCoordinateX + stepsCountByCoordinateY;
 
-            return curierStepsCountByTargetLocation;
+            return courierStepsCountByTargetLocation;
         }
 
         protected override IEnumerable<IComparable> GetEqualityComponents()

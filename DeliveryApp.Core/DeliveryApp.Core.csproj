@@ -21,7 +21,6 @@
 
     <ItemGroup>
       <Folder Include="Application\UseCases\" />
-      <Folder Include="Domain\Model\OrderAggregate\" />
     </ItemGroup>
 
 </Project>

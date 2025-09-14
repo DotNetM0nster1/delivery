@@ -106,10 +106,10 @@ public class CreateLocationTest
     [InlineData(10, 8)]
     [InlineData(10, 9)]
     [InlineData(10, 10)]
-    public void WhenCreatingLocation_AndXYDontGoAboard_ThenResultShouldBeTrue(int x, int y)
+    public void WhenCreatingLocation_AndXYDontGoAboard_ThenMethodShouldBeCreateLocation(int x, int y)
     {
         //Act
-        var location = Location.CreateLocation(x, y);
+        var location = Location.Create(x, y);
 
         //Assert
         Assert.True(location.IsSuccess);
@@ -140,10 +140,10 @@ public class CreateLocationTest
     [InlineData(int.MinValue, int.MinValue)]
     [InlineData(int.MaxValue, int.MaxValue)]
 
-    public void WhenCreatingLocation_AndXYGoAboard_ThenResultShouldBeFalse(int x, int y)
+    public void WhenCreatingLocation_AndXYGoAboard_ThenMethodShouldntCreateLocation(int x, int y)
     {
         //Act
-        var location = Location.CreateLocation(x, y);
+        var location = Location.Create(x, y);
 
         //Assert
         Assert.False(location.IsSuccess);

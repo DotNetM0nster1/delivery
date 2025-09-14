@@ -8,25 +8,21 @@ public sealed class Error : ValueObject
 {
     private const string Separator = "||";
 
-    private Error()
-    {
-    }
+    [ExcludeFromCodeCoverage]
+    private Error() { }
 
-    public Error(string code, string message)
+    public Error(string code, string message, Error error = null)
     {
         Code = code;
         Message = message;
+        InnerError = error;
     }
 
-    /// <summary>
-    ///     Код ошибки
-    /// </summary>
     public string Code { get; }
 
-    /// <summary>
-    ///     Текст ошибки
-    /// </summary>
     public string Message { get; }
+
+    public Error InnerError  { get; set; }
 
     protected override IEnumerable<IComparable> GetEqualityComponents()
     {
@@ -36,7 +32,7 @@ public sealed class Error : ValueObject
 
     public string Serialize()
     {
-        return $"{Code}{Separator}{Message}";
+        return $"{Code}{Separator}{Message}{InnerError.Message}";
     }
 
     public static Error Deserialize(string serialized)

@@ -1,4 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Primitives;
 using System.Diagnostics.CodeAnalysis;
 
@@ -17,54 +19,47 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             OrderId = orderId;
         }
 
+        public static StoragePlace Bag => new(nameof(Bag).ToLowerInvariant(), 10);
+
         public string Name { get; }
 
         public int TotalVolume { get; private set; }
 
         public Guid? OrderId { get; private set; }
 
-        public static Result<StoragePlace, Error> CreateStorage(
+        public static Result<StoragePlace, Error> Create(
             string name, 
-            int capacity, 
+            int volume, 
             Guid? orderId = null) 
         {
             if (string.IsNullOrWhiteSpace(name))
                 return GeneralErrors.ValueIsInvalid(nameof(name));
 
-            if (capacity <= 0)
-                return GeneralErrors.ValueIsInvalid(nameof(capacity));
+            if (volume <= 0)
+                return GeneralErrors.ValueIsInvalid(nameof(volume));
 
-            return new StoragePlace(name, capacity, orderId);
+            return new StoragePlace(name, volume, orderId);
         }
 
-        public Result<bool, Error> IsOrderCorrectForPutInStorage(
-            Guid orderId, 
-            int orderVolume)
+        public Result<bool, Error> IsOrderCorrectForAdd(Order order)
         {
-            if (OrderId != null)
-                return GeneralErrors.ValueIsInvalid(nameof(orderId));
+            if (order == null)
+                return GeneralErrors.ValueIsRequired(nameof(order));
 
-            if (orderVolume > TotalVolume)
-                return GeneralErrors.ValueIsInvalid(nameof(orderVolume));
-
-            return true;
+            return order.Volume <= TotalVolume && OrderId == null;
         }
 
-        public Result<UnitResult<Error>, Error> PutOrderInStorage(
-            Guid orderId, 
-            int itemsCount)
+        public UnitResult<Error> AddOrderInStoragePlace(Order order)
         {
-            var isOrderCorrect = IsOrderCorrectForPutInStorage(orderId, itemsCount);
+            if (IsOrderCorrectForAdd(order) is var isCorrect && (!isCorrect.Value || isCorrect.IsFailure))
+                return GeneralErrors.OrderCannotBeStored(isCorrect.IsFailure ? isCorrect.Error : null);
 
-            if (!isOrderCorrect.IsSuccess)
-                return GeneralErrors.ValueIsInvalid(nameof(isOrderCorrect));
-
-            OrderId = orderId;
+            OrderId = order.Id;
 
             return UnitResult.Success<Error>();
         }
 
-        public Result<UnitResult<Error>, Error> OutputOrderOfStorage()
+        public UnitResult<Error> RemoveOrderOfStorage()
         {
             if(OrderId == null)
                 return GeneralErrors.ValueIsInvalid(nameof(OrderId));
@@ -74,6 +69,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             return UnitResult.Success<Error>();
         }
 
-        private bool IsBusy() => OrderId != null;
+        private bool IsCourierBusy() => OrderId != null;
     }
 }

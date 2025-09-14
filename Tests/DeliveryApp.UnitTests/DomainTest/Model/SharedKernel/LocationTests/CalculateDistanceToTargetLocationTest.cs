@@ -3,22 +3,18 @@ using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
 {
-    public class CalculateCurierDistanceToTargetLocationTest
+    public class CalculateDistanceToTargetLocationTest
     {
         [Theory]
         [InlineData(10, 10, 1, 1)]
         [InlineData(1, 1, 10, 10)]
         [InlineData(10, 1, 1, 10)]
         [InlineData(1, 10, 10, 1)]
-        public void WhenCalculatingDistanceToTargetLocation_AndThisDioganalMoving_ThenResultShouldBe18(
-            int currentX, 
-            int currentY, 
-            int targetX, 
-            int targetY)
+        public void WhenCalculatingDistanceToTargetLocation_AndThisDioganalMoving_ThenMethodShouldBeReturn18(int currentX, int currentY, int targetX, int targetY)
         {
             //Arragne 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value); 
@@ -30,15 +26,11 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
         [Theory]
         [InlineData(1, 5, 10, 5)]
         [InlineData(10, 5, 1, 5)]
-        public void WhenCalculatingDistanceToTargetLocation_AndThisHorizontalMoving_ThenResultShouldBe9(
-            int currentX, 
-            int currentY, 
-            int targetX, 
-            int targetY)
+        public void WhenCalculatingDistanceToTargetLocation_AndThisHorizontalMoving_ThenMethodShouldBeReturn9(int currentX, int currentY, int targetX, int targetY)
         {
             //Arragne 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
@@ -50,15 +42,11 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
         [Theory]
         [InlineData(1, 1, 1, 10)]
         [InlineData(1, 10, 1, 1)]
-        public void WhenCalculatingDistanceToTargetLocation_AndThisVerticallMoving_ThenResultShouldBe9(
-            int currentX,
-            int currentY,
-            int targetX,
-            int targetY)
+        public void WhenCalculatingDistanceToTargetLocation_AndThisVerticallMoving_ThenMethodShouldBeReturn9(int currentX, int currentY, int targetX, int targetY)
         {
             //Arragne 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
@@ -68,7 +56,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
         }
 
         [Fact]
-        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX9Y4_AndTargetLocationX6Y8_ThenResultShouldBe7()
+        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX9Y4_AndTargetLocationX6Y8_ThenMethodShouldBeReturn7()
         {
             //Arragne
             var currentX = 9;
@@ -76,8 +64,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetX = 6;
             var targetY = 8;
 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
@@ -87,7 +75,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
         }
 
         [Fact]
-        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX3Y1_AndTargetLocationX5Y9_ThenResultShouldBe10()
+        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX3Y1_AndTargetLocationX5Y9_ThenMethodShouldBeReturn10()
         {
             //Arragne
             var currentX = 3;
@@ -95,8 +83,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetX = 5;
             var targetY = 9;
 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
@@ -106,7 +94,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
         }
 
         [Fact]
-        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX8Y4_AndTargetLocationX9Y4_ThenResultShouldBe1()
+        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX8Y4_AndTargetLocationX9Y4_ThenMethodSouldBeReturn1()
         {
             //Arragne
             var currentX = 8;
@@ -114,8 +102,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetX = 9;
             var targetY = 4;
 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
@@ -125,7 +113,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
         }
 
         [Fact]
-        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX6Y6_AndTargetLocationX6Y7_ThenResultShouldBe1()
+        public void WhenCalculatingDistanceToTargetLocation_AndCurrentLocationX6Y6_AndTargetLocationX6Y7_ThenMethodShouldBeReturn1()
         {
             //Arragne
             var currentX = 6;
@@ -133,8 +121,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests
             var targetX = 6;
             var targetY = 7;
 
-            var currentLocation = Location.CreateLocation(currentX, currentY);
-            var targetLocation = Location.CreateLocation(targetX, targetY);
+            var currentLocation = Location.Create(currentX, currentY);
+            var targetLocation = Location.Create(targetX, targetY);
 
             //Act
             var stepsCountResult = currentLocation.Value.CalculateDistanceToTargetLocation(targetLocation.Value);
