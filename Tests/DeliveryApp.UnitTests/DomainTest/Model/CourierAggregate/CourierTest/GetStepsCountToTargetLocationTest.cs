@@ -133,7 +133,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
         [InlineData(10, 8, 1, 2, 3, 5)]  
         [InlineData(10, 9, 1, 2, 2, 8)]  
         [InlineData(10, 10, 1, 2, 1, 17)]
-        public void WhenGettingStepsCountToTargetLocation_AndInputValuesCorrect_ThenMethodShouldBeReturnError(int xCurrent, int yCurrent, int xTarget, int yTarget, int courierSpeed, double result)
+        public void WhenGettingStepsCountToTargetLocation_AndInputValuesCorrect_ThenMethodShouldBeReturnStepsCount(int xCurrent, int yCurrent, int xTarget, int yTarget, int courierSpeed, double result)
         {
             //Arrange
             var currentLocation = Location.Create(xCurrent, yCurrent);
