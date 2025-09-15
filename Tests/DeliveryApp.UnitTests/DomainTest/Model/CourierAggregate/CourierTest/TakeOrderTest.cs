@@ -65,7 +65,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             var storagePlaceName = "smallbag";
 
             courier.CourierStoragePlaces.Clear();
-            courier.AddNewStoragePlace(storagePlaceName, maxStoragePlaceVolume, orderId);
+            courier.AddNewStoragePlace(storagePlaceName, maxStoragePlaceVolume);
 
             //Act
             var takeOrderResult = courier.TakeOrder(order.Value);
@@ -89,8 +89,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             var orderLocation = Location.Create(xOrder, yOrder);
 
             var orderVolume = 20;
-            var backetId = Guid.NewGuid();
-            var order = Order.Create(backetId, orderLocation.Value, orderVolume).Value;
+            var basketId = Guid.NewGuid();
+            var order = Order.Create(basketId, orderLocation.Value, orderVolume).Value;
 
             var courierSpeed = 5;
             var courierName = "Saveliy Prostikin";
@@ -98,9 +98,9 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
 
             var storagePlaceName = "bag";
             var maxStoragePlaceVolume = 20;
-            var orderId = Guid.NewGuid();
 
-            courier.AddNewStoragePlace(storagePlaceName, maxStoragePlaceVolume, orderId);
+            courier.AddNewStoragePlace(storagePlaceName, maxStoragePlaceVolume);
+            courier.TakeOrder(order);
 
             //Act
             var takeOrderResult = courier.TakeOrder(order);

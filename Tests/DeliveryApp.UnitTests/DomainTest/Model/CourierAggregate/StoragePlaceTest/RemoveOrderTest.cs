@@ -10,7 +10,7 @@ using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTest
 {
-    public class RemoveOrderOfStorageTest
+    public class RemoveOrderTest
     {
         [Fact]
         public void WhenRemovingOrderOfStorage_AndStoragePlaceHaveOrder_ThenMethodShouldBeRemoveOrderOfStorage()
@@ -27,10 +27,10 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
             var maxStoragePlaceVolume = 7;
             var storagePlaceName = "Some name";
             var storagePlace = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume).Value;
-            storagePlace.AddOrderInStoragePlace(order);
+            storagePlace.AddOrder(order);
 
             //Act
-            var removeOrderOfStorageResult = storagePlace.RemoveOrderOfStorage();
+            var removeOrderOfStorageResult = storagePlace.RemoveOrder();
 
             //Assert
             Assert.False(removeOrderOfStorageResult.IsFailure);
@@ -48,7 +48,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
             var storagePlace = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume).Value;
 
             //Act
-            var removeOrderOfStorageResult = storagePlace.RemoveOrderOfStorage();
+            var removeOrderOfStorageResult = storagePlace.RemoveOrder();
 
             //Assert
             Assert.False(removeOrderOfStorageResult.IsSuccess);

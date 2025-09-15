@@ -105,28 +105,18 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
 
             var orderVolume = 6;
             var basketId = Guid.NewGuid();
-            var order = Order.Create(basketId, orderLocation.Value, orderVolume);
-
-            var storageVolume = 30;
-            var storageName = "largebag";
-            var storageOrderId = Guid.NewGuid();
-            var storage = StoragePlace.Create(storageName, storageVolume, storageOrderId);
+            var order = Order.Create(basketId, orderLocation.Value, orderVolume).Value;
 
             var courierSpeed = 4;
             var courierName = "Pavel Meshkov";
-            var courier = Courier.Create(courierSpeed, courierName, currentCourierLocation.Value);
+            var courier = Courier.Create(courierSpeed, courierName, currentCourierLocation.Value).Value;
 
-            courier.Value.CourierStoragePlaces.Clear();
-            courier.Value.CourierStoragePlaces.Add(storage.Value);
-
-            var storagePlaceName = StoragePlace.Bag.Name;
+            courier.TakeOrder(order);
 
             //Act
-            var isCourierCanTakeOrderResult = courier.Value.IsCanTakeOrder(order.Value);
+            var isCourierCanTakeOrderResult = courier.IsCanTakeOrder(order);
 
             //Assert
-            Assert.True(courier.Value.CourierStoragePlaces.Count == 1);
-            Assert.Contains(storage.Value, courier.Value.CourierStoragePlaces);
             Assert.False(isCourierCanTakeOrderResult.IsFailure);
             Assert.True(isCourierCanTakeOrderResult.IsSuccess);
             Assert.False(isCourierCanTakeOrderResult.Value);

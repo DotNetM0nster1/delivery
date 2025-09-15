@@ -11,12 +11,11 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         [ExcludeFromCodeCoverage]
         private StoragePlace() { }
 
-        private StoragePlace(string name, int volume, Guid? orderId = null)
+        private StoragePlace(string name, int volume)
         { 
             Id = Guid.NewGuid();
             Name = name;
             TotalVolume = volume;
-            OrderId = orderId;
         }
 
         public static StoragePlace Bag => new(nameof(Bag).ToLowerInvariant(), 10);
@@ -29,8 +28,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public static Result<StoragePlace, Error> Create(
             string name, 
-            int volume, 
-            Guid? orderId = null) 
+            int volume) 
         {
             if (string.IsNullOrWhiteSpace(name))
                 return GeneralErrors.ValueIsInvalid(nameof(name));
@@ -38,7 +36,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (volume <= 0)
                 return GeneralErrors.ValueIsInvalid(nameof(volume));
 
-            return new StoragePlace(name, volume, orderId);
+            return new StoragePlace(name, volume);
         }
 
         public Result<bool, Error> IsOrderCorrectForAdd(Order order)
@@ -49,7 +47,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             return order.Volume <= TotalVolume && OrderId == null;
         }
 
-        public UnitResult<Error> AddOrderInStoragePlace(Order order)
+        public UnitResult<Error> AddOrder(Order order)
         {
             if (IsOrderCorrectForAdd(order) is var isCorrect && (!isCorrect.Value || isCorrect.IsFailure))
                 return GeneralErrors.OrderCannotBeStored(isCorrect.IsFailure ? isCorrect.Error : null);
@@ -59,7 +57,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             return UnitResult.Success<Error>();
         }
 
-        public UnitResult<Error> RemoveOrderOfStorage()
+        public UnitResult<Error> RemoveOrder()
         {
             if(OrderId == null)
                 return GeneralErrors.ValueIsInvalid(nameof(OrderId));

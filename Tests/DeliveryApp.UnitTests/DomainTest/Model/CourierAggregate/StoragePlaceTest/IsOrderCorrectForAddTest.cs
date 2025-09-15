@@ -26,7 +26,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
 
             var maxStoragePlaceVolume = 20;
             var storagePlaceName = "Some name";
-            var storagePlace = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume, order.Id).Value;
+            var storagePlace = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume).Value;
+            storagePlace.AddOrder(order);
 
             //Act
             var isOrderCorrectForAddResult = storagePlace.IsOrderCorrectForAdd(order);
@@ -52,7 +53,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
 
             var maxStoragePlaceVolume = 10;
             var storagePlaceName = "Some name";
-            var storagePlace = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume, order.Id).Value;
+            var storagePlace = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume).Value;
+            storagePlace.AddOrder(order);
 
             //Act
             var isOrderCorrectForAddResult = storagePlace.IsOrderCorrectForAdd(order);

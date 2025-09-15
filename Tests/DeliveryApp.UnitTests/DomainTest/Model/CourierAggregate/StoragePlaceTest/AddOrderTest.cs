@@ -10,7 +10,7 @@ using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTest
 {
-    public class AddOrderInStoragePlaceTest
+    public class AddOrderTest
     {
         [Fact]
         public void WhenAddingOrderInStoragePlace_AndOrderIsCorrect_ThenMethodShouldBeAddOrderInStoragePlace()
@@ -29,7 +29,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
             var order = Order.Create(basketId, orderLocation, orderVolume).Value;
 
             //Act
-            var addOrderResult = storagePlace.AddOrderInStoragePlace(order);
+            var addOrderResult = storagePlace.AddOrder(order);
 
             //Assert
             Assert.True(addOrderResult.IsSuccess);
@@ -49,13 +49,15 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
             var maxStoragePlaceVolume = 60;
             var storagePlaceName = "Some name";
             var basketId = Guid.NewGuid();
-            var storage = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume, basketId).Value;
+            var storage = StoragePlace.Create(storagePlaceName, maxStoragePlaceVolume).Value;
 
             var orderVolume = 12;
             var order = Order.Create(basketId, orderLocation, orderVolume).Value;
 
+            storage.AddOrder(order);
+
             //Act
-            var addOrderResult = storage.AddOrderInStoragePlace(order);
+            var addOrderResult = storage.AddOrder(order);
 
             //Assert
             Assert.False(addOrderResult.IsSuccess);
@@ -80,7 +82,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
             var order = Order.Create(basketId, orderLocation, orderVolume).Value;
 
             //Act
-            var addOrderResult = storagePlace.AddOrderInStoragePlace(order);
+            var addOrderResult = storagePlace.AddOrder(order);
 
             //Assert
             Assert.False(addOrderResult.IsSuccess);

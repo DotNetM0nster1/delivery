@@ -73,15 +73,13 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTe
         {
             //Arrange
             var storagePlaceVolume = 22;
-            var orderId = Guid.NewGuid();
             var storagePlaceName = "Some storage";
 
             //Act
-            var createStoragePlaceResult = StoragePlace.Create(storagePlaceName, storagePlaceVolume, orderId);
+            var createStoragePlaceResult = StoragePlace.Create(storagePlaceName, storagePlaceVolume);
 
             //Assert
             Assert.True(createStoragePlaceResult.IsSuccess);
-            Assert.True(createStoragePlaceResult.Value.OrderId == orderId);
             Assert.True(createStoragePlaceResult.Value.Name == storagePlaceName);
             Assert.True(createStoragePlaceResult.Value.TotalVolume == storagePlaceVolume);
         }

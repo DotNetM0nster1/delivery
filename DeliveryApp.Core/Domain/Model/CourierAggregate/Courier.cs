@@ -46,9 +46,9 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             return new Courier(courierSpeed, courierName, courierLocation);
         }
 
-        public Result<UnitResult<Error>, Error> AddNewStoragePlace(string storageName, int storageVolume, Guid? orderId = null)
+        public Result<UnitResult<Error>, Error> AddNewStoragePlace(string storageName, int storageVolume)
         {
-            if (StoragePlace.Create(storageName, storageVolume, orderId) is var createStorageResult && createStorageResult.IsFailure)
+            if (StoragePlace.Create(storageName, storageVolume) is var createStorageResult && createStorageResult.IsFailure)
                 return GeneralErrors.StorageCannotBeCreated(createStorageResult.Error);
 
             CourierStoragePlaces.Add(createStorageResult.Value);
@@ -75,7 +75,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
             foreach (var storage in CourierStoragePlaces)
             {
-                if (storage.AddOrderInStoragePlace(order) is var storeOrderResult && storeOrderResult.IsSuccess)
+                if (storage.AddOrder(order) is var storeOrderResult && storeOrderResult.IsSuccess)
                     return UnitResult.Success<Error>();
             }
 
@@ -95,7 +95,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if(storagePlace == null)
                 return GeneralErrors.ValueIsRequired(nameof(storagePlace));
 
-            storagePlace.RemoveOrderOfStorage();
+            storagePlace.RemoveOrder();
 
             return UnitResult.Success<Error>();
         }
