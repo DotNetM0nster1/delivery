@@ -1,9 +1,11 @@
 using DeliveryApp.Api;
+using DeliveryApp.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Health Checks
 builder.Services.AddHealthChecks();
+builder.Services.AddCourierDistributorService();
 
 // Cors
 builder.Services.AddCors(options =>

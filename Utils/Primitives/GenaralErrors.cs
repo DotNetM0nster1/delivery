@@ -86,6 +86,23 @@ public static class GeneralErrors
     }
 
     [ExcludeFromCodeCoverage]
+    public static Error OrderCannotBeDistributedError(Error innerError = null)
+    {
+        return new Error(
+            "order.cannot.be.distributed",
+            "Order cannot be distributed, some of input values is not correct or not found matching courer for distribute",
+            innerError);
+    }
+
+    [ExcludeFromCodeCoverage]
+    public static Error NotFoundMatchingCourierForOrder()
+    {
+        return new Error(
+            "not.found.matching.courier.for.order",
+            "When trying find matching courier for the order, not found matching couriers for the order");
+    }
+
+    [ExcludeFromCodeCoverage]
     public static Error CourierCannotMoveToTargetLocation(Error innerError = null)
     {
         return new Error(
