@@ -40,7 +40,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             var storagePlaceName = StoragePlace.Bag.Name;
             var courier = Courier.Create(courierSpeed, courierName, currentCourierLocation.Value).Value;
 
-            courier.CourierStoragePlaces.Clear();
+            courier.StoragePlaces.Clear();
             courier.AddNewStoragePlace(storagePlaceName, storageVolume);
 
             //Act
@@ -79,7 +79,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
 
             var courier = Courier.Create(courierSpeed, courierName, currentCourierLocation.Value).Value;
 
-            courier.CourierStoragePlaces.Clear();
+            courier.StoragePlaces.Clear();
             courier.AddNewStoragePlace(storagePlaceName, storageVolume);
 
             //Act
@@ -141,13 +141,13 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             var courierSpeed = 4;
             var courierName = "Maxim Loshkov";
             var courier = Courier.Create(courierSpeed, courierName, currentCourierLocation.Value);
-            courier.Value.CourierStoragePlaces.Clear();
+            courier.Value.StoragePlaces.Clear();
 
             //Act
             var isCourierCanTakeOrderResult = courier.Value.IsCanTakeOrder(order.Value);
 
             //Assert
-            Assert.True(courier.Value.CourierStoragePlaces.Count == 0);
+            Assert.True(courier.Value.StoragePlaces.Count == 0);
             Assert.False(isCourierCanTakeOrderResult.IsFailure);
             Assert.True(isCourierCanTakeOrderResult.IsSuccess);
             Assert.False(isCourierCanTakeOrderResult.Value);

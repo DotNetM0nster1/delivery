@@ -54,7 +54,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             var order = Order.Create(basketId, orderLocation, orderVolume).Value;
 
             courier.TakeOrder(order);
-            courier.CourierStoragePlaces.Clear();
+            courier.StoragePlaces.Clear();
 
             //Act
             var finishOrderResult = courier.FinishOrder(order.Id);
@@ -121,7 +121,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             //Assert
             Assert.True(finishOrderResult.IsSuccess);
             Assert.False(finishOrderResult.IsFailure);
-            Assert.True(courier.CourierStoragePlaces[0].OrderId == null);
+            Assert.True(courier.StoragePlaces[0].OrderId == null);
         }
     }
 }

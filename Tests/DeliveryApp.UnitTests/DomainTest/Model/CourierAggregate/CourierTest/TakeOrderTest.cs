@@ -64,7 +64,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             var maxStoragePlaceVolume = 5;
             var storagePlaceName = "smallbag";
 
-            courier.CourierStoragePlaces.Clear();
+            courier.StoragePlaces.Clear();
             courier.AddNewStoragePlace(storagePlaceName, maxStoragePlaceVolume);
 
             //Act
@@ -137,7 +137,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             //Assert
             Assert.True(takeOrderResult.IsSuccess);
             Assert.False(takeOrderResult.IsFailure);
-            Assert.Contains(order.Id, courier.CourierStoragePlaces.Select(storage => storage.OrderId));
+            Assert.Contains(order.Id, courier.StoragePlaces.Select(storage => storage.OrderId));
         }
     }
 }

@@ -15,19 +15,19 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         private Courier(int courierSpeed, string courierName, Location currentCourierLocation)
         {
             Id = Guid.NewGuid();
-            CourierName = courierName;
-            CourierSpeed = courierSpeed;
-            CurrentCourierLocation = currentCourierLocation;
-            CourierStoragePlaces = [StoragePlace.Bag];
+            Name = courierName;
+            Speed = courierSpeed;
+            StoragePlaces = [StoragePlace.Bag];
+            CourierLocation = currentCourierLocation;
         }
 
-        public int CourierSpeed { get; }
+        public int Speed { get; }
 
-        public string CourierName { get; }
+        public string Name { get; }
 
-        public List<StoragePlace> CourierStoragePlaces { get; }
+        public List<StoragePlace> StoragePlaces { get; }
 
-        public Location CurrentCourierLocation { get; private set; }
+        public Location CourierLocation { get; private set; }
 
         public static Result<Courier, Error> Create(
             int courierSpeed,
@@ -51,15 +51,15 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (StoragePlace.Create(storageName, storageVolume) is var createStorageResult && createStorageResult.IsFailure)
                 return GeneralErrors.StorageCannotBeCreated(createStorageResult.Error);
 
-            CourierStoragePlaces.Add(createStorageResult.Value);
-            CourierStoragePlaces.TrimExcess();
+            StoragePlaces.Add(createStorageResult.Value);
+            StoragePlaces.TrimExcess();
 
             return UnitResult.Success<Error>();
         }
 
         public Result<bool, Error> IsCanTakeOrder(Order order)
         {
-            foreach (var storage in CourierStoragePlaces.Select(storage => storage.IsOrderCorrectForAdd(order)))
+            foreach (var storage in StoragePlaces.Select(storage => storage.IsOrderCorrectForAdd(order)))
             {
                 if (storage.IsFailure) return GeneralErrors.IsCourierCanTakeOrderError(storage.Error);
                 if (storage.Value) return true;
@@ -73,7 +73,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (IsCanTakeOrder(order) is var takeOrderResult && (takeOrderResult.IsFailure || !takeOrderResult.Value))
                 return GeneralErrors.TakeOrderError(takeOrderResult.IsFailure ? takeOrderResult.Error : null);
 
-            foreach (var storage in CourierStoragePlaces)
+            foreach (var storage in StoragePlaces)
             {
                 if (storage.AddOrder(order) is var storeOrderResult && storeOrderResult.IsSuccess)
                     return UnitResult.Success<Error>();
@@ -87,10 +87,10 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (orderId == Guid.Empty)
                 return GeneralErrors.ValueIsRequired(nameof(orderId));
 
-            if(CourierStoragePlaces.Count == 0)
-                return GeneralErrors.ValueIsRequired(nameof(CourierStoragePlaces.Count));
+            if(StoragePlaces.Count == 0)
+                return GeneralErrors.ValueIsRequired(nameof(StoragePlaces.Count));
 
-            var storagePlace = CourierStoragePlaces.FirstOrDefault(order => order.OrderId == orderId);
+            var storagePlace = StoragePlaces.FirstOrDefault(order => order.OrderId == orderId);
             
             if(storagePlace == null)
                 return GeneralErrors.ValueIsRequired(nameof(storagePlace));
@@ -105,10 +105,10 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (targetLocation == null)
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
 
-            if (targetLocation.CalculateDistanceToTargetLocation(CurrentCourierLocation) is var calculateDistanceResult && calculateDistanceResult.IsFailure)
+            if (targetLocation.CalculateDistanceToTargetLocation(CourierLocation) is var calculateDistanceResult && calculateDistanceResult.IsFailure)
                 return GeneralErrors.CourierCannotCalculateDistanceToTargetLocation(calculateDistanceResult.Error);
 
-            return (double)calculateDistanceResult.Value / CourierSpeed;
+            return (double)calculateDistanceResult.Value / Speed;
         }
 
         public UnitResult<Error> Move(Location targetLocation)
@@ -116,16 +116,16 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (targetLocation == null) 
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
 
-            var offsetByX = targetLocation.X - CurrentCourierLocation.X;
-            var offsetByY = targetLocation.Y - CurrentCourierLocation.Y;
-            var cruisingRange = CourierSpeed;
+            var offsetByX = targetLocation.X - CourierLocation.X;
+            var offsetByY = targetLocation.Y - CourierLocation.Y;
+            var cruisingRange = Speed;
 
             var xMove = Math.Clamp(offsetByX, -cruisingRange, cruisingRange);
             cruisingRange -= Math.Abs(xMove);
 
             var yMove = Math.Clamp(offsetByY, -cruisingRange, cruisingRange);
 
-            CurrentCourierLocation = Location.Create(CurrentCourierLocation.X + xMove, CurrentCourierLocation.Y + yMove).Value;
+            CourierLocation = Location.Create(CourierLocation.X + xMove, CourierLocation.Y + yMove).Value;
 
             return UnitResult.Success<Error>();
         }

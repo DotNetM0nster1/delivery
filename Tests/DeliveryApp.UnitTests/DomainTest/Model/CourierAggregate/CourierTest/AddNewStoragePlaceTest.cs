@@ -67,8 +67,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             //Assert
             Assert.True(addNewStoragePlaseResult.IsSuccess);
             Assert.False(addNewStoragePlaseResult.IsFailure);
-            Assert.True(courier.CourierStoragePlaces.Count == 1 + 1);
-            Assert.True(courier.CourierStoragePlaces.Capacity == 1 + 1);
+            Assert.True(courier.StoragePlaces.Count == 1 + 1);
+            Assert.True(courier.StoragePlaces.Capacity == 1 + 1);
         }
     }
 }

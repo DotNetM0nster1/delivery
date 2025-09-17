@@ -1396,11 +1396,11 @@ namespace DeliveryApp.UnitTests.DomainTest.Services.Distribute
             Assert.True(order.CourierId != null);
             Assert.True(order.Status.Name == "assigned");
             Assert.Contains(order.CourierId.Value, couriers.Select(courier => courier.Id).ToList());
-            Assert.True(couriers.Where(courier => courier.CourierStoragePlaces.Where(storagePlace => storagePlace.OrderId == order.Id).Count() == 1
-                && courier.CourierName == chousingCourierName
-                && courier.CurrentCourierLocation.X == chousingCourierX
-                && courier.CurrentCourierLocation.Y == chousingCourierY
-                && courier.CourierSpeed == chousingCourierSpeed).Count() == 1);
+            Assert.True(couriers.Where(courier => courier.StoragePlaces.Where(storagePlace => storagePlace.OrderId == order.Id).Count() == 1
+                && courier.Name == chousingCourierName
+                && courier.CourierLocation.X == chousingCourierX
+                && courier.CourierLocation.Y == chousingCourierY
+                && courier.Speed == chousingCourierSpeed).Count() == 1);
         }
     }
 }

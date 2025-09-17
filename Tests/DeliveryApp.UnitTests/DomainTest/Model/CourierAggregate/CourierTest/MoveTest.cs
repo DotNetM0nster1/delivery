@@ -128,7 +128,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             //Assert
             Assert.True(moveResult.IsSuccess);
             Assert.False(moveResult.IsFailure);
-            Assert.True(courier.CurrentCourierLocation.X == resultX && courier.CurrentCourierLocation.Y == resultY);
+            Assert.True(courier.CourierLocation.X == resultX && courier.CourierLocation.Y == resultY);
         }
     }
 }
