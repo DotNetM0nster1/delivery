@@ -1,6 +1,6 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 using Primitives;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DeliveryApp.Core.Domain.Model.SharedKernel
 {

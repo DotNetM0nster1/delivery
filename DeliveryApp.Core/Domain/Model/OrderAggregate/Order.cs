@@ -1,8 +1,8 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using Primitives;
 using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
+using Primitives;
 
 namespace DeliveryApp.Core.Domain.Model.OrderAggregate
 {
@@ -27,10 +27,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
 
         public int Volume { get; private set; }
 
-        public static Result<Order, Error> Create(
-            Guid orderId, 
-            Location location, 
-            int volume)
+        public static Result<Order, Error> Create(Guid orderId, Location location, int volume)
         {
             if (orderId == Guid.Empty) 
                 return GeneralErrors.ValueIsRequired(nameof(orderId));

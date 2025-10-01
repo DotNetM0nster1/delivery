@@ -1,9 +1,9 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using Primitives;
 using System.ComponentModel.Design.Serialization;
 using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
+using Primitives;
 
 namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 {
@@ -18,7 +18,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             Name = courierName;
             Speed = courierSpeed;
             StoragePlaces = [StoragePlace.Bag];
-            CourierLocation = currentCourierLocation;
+            Location = currentCourierLocation;
         }
 
         public int Speed { get; }
@@ -27,12 +27,9 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public List<StoragePlace> StoragePlaces { get; }
 
-        public Location CourierLocation { get; private set; }
+        public Location Location { get; private set; }
 
-        public static Result<Courier, Error> Create(
-            int courierSpeed,
-            string courierName,
-            Location courierLocation)
+        public static Result<Courier, Error> Create(int courierSpeed, string courierName, Location courierLocation)
         {
             if (string.IsNullOrWhiteSpace(courierName))
                 return GeneralErrors.ValueIsRequired(nameof(courierName));
@@ -105,7 +102,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (targetLocation == null)
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
 
-            if (targetLocation.CalculateDistanceToTargetLocation(CourierLocation) is var calculateDistanceResult && calculateDistanceResult.IsFailure)
+            if (targetLocation.CalculateDistanceToTargetLocation(Location) is var calculateDistanceResult && calculateDistanceResult.IsFailure)
                 return GeneralErrors.CourierCannotCalculateDistanceToTargetLocation(calculateDistanceResult.Error);
 
             return (double)calculateDistanceResult.Value / Speed;
@@ -116,8 +113,9 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             if (targetLocation == null) 
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
 
-            var offsetByX = targetLocation.X - CourierLocation.X;
-            var offsetByY = targetLocation.Y - CourierLocation.Y;
+            var offsetByX = targetLocation.X - Location.X;
+            var offsetByY = targetLocation.Y - Location.Y;
+
             var cruisingRange = Speed;
 
             var xMove = Math.Clamp(offsetByX, -cruisingRange, cruisingRange);
@@ -125,7 +123,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
             var yMove = Math.Clamp(offsetByY, -cruisingRange, cruisingRange);
 
-            CourierLocation = Location.Create(CourierLocation.X + xMove, CourierLocation.Y + yMove).Value;
+            Location = Location.Create(Location.X + xMove, Location.Y + yMove).Value;
 
             return UnitResult.Success<Error>();
         }

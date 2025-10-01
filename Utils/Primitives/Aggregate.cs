@@ -8,13 +8,9 @@ public abstract class Aggregate<TId>
 {
     private readonly List<DomainEvent> _domainEvents = new();
 
-    protected Aggregate(TId id) : base(id)
-    {
-    }
+    protected Aggregate(TId id) : base(id) { }
 
-    protected Aggregate()
-    {
-    }
+    protected Aggregate() { }
 
     public IReadOnlyCollection<DomainEvent> GetDomainEvents()
     {

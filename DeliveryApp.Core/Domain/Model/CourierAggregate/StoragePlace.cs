@@ -26,9 +26,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public Guid? OrderId { get; private set; }
 
-        public static Result<StoragePlace, Error> Create(
-            string name, 
-            int volume) 
+        public static Result<StoragePlace, Error> Create(string name, int volume) 
         {
             if (string.IsNullOrWhiteSpace(name))
                 return GeneralErrors.ValueIsInvalid(nameof(name));
@@ -41,8 +39,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public Result<bool, Error> IsOrderCorrectForAdd(Order order)
         {
-            if (order == null)
-                return GeneralErrors.ValueIsRequired(nameof(order));
+            if (order == null) return GeneralErrors.ValueIsRequired(nameof(order));
 
             return order.Volume <= TotalVolume && OrderId == null;
         }
@@ -59,8 +56,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public UnitResult<Error> RemoveOrder()
         {
-            if(OrderId == null)
-                return GeneralErrors.ValueIsInvalid(nameof(OrderId));
+            if(OrderId == null) return GeneralErrors.ValueIsInvalid(nameof(OrderId));
 
             OrderId = null;
 

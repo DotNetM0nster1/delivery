@@ -1398,8 +1398,8 @@ namespace DeliveryApp.UnitTests.DomainTest.Services.Distribute
             Assert.Contains(order.CourierId.Value, couriers.Select(courier => courier.Id).ToList());
             Assert.True(couriers.Where(courier => courier.StoragePlaces.Where(storagePlace => storagePlace.OrderId == order.Id).Count() == 1
                 && courier.Name == chousingCourierName
-                && courier.CourierLocation.X == chousingCourierX
-                && courier.CourierLocation.Y == chousingCourierY
+                && courier.Location.X == chousingCourierX
+                && courier.Location.Y == chousingCourierY
                 && courier.Speed == chousingCourierSpeed).Count() == 1);
         }
     }

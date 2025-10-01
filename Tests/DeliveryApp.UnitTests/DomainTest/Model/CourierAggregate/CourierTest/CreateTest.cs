@@ -52,7 +52,7 @@ namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
             Assert.False(createCourierResult.IsFailure);
             Assert.True(createCourierResult.Value.Name == courierName);
             Assert.True(createCourierResult.Value.Speed == courierSpeed);
-            Assert.True(createCourierResult.Value.CourierLocation == currentCourierLocation.Value);
+            Assert.True(createCourierResult.Value.Location == currentCourierLocation.Value);
         }
     }
 }

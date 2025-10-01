@@ -1,5 +1,5 @@
-﻿using CSharpFunctionalExtensions;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 
 namespace DeliveryApp.Core.Domain.Model.OrderAggregate
 {

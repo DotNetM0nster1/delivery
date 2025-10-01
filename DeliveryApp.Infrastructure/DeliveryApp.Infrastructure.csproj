@@ -34,9 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Adapters\Grpc\GeoService\grpc.proto" />
-        <None Remove="Adapters\Kafka\BasketConfirmed\Contract.proto" />
-        <None Remove="Adapters\Grpc\GeoService\Contract.proto" />
+      <Folder Include="OutputAdapters\Postgres\Migrations\" />
     </ItemGroup>
 
 </Project>
