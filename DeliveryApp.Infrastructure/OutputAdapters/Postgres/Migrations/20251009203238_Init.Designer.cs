@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
 {
     [DbContext(typeof(ApplicationDatabaseContext))]
-    [Migration("20250923161929_Init")]
+    [Migration("20251009203238_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -51,8 +51,9 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid?>("CourierId")
-                        .HasColumnType("uuid");
+                    b.Property<Guid>("CourierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("courier_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -101,11 +102,11 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
 
                             b1.Property<int>("X")
                                 .HasColumnType("integer")
-                                .HasColumnName("x");
+                                .HasColumnName("location_x");
 
                             b1.Property<int>("Y")
                                 .HasColumnType("integer")
-                                .HasColumnName("y");
+                                .HasColumnName("location_y");
 
                             b1.HasKey("CourierId");
 
@@ -123,7 +124,9 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
                 {
                     b.HasOne("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", null)
                         .WithMany("StoragePlaces")
-                        .HasForeignKey("CourierId");
+                        .HasForeignKey("CourierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.OrderAggregate.Order", b =>

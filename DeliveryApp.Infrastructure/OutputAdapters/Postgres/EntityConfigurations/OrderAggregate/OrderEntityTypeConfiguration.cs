@@ -11,33 +11,33 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.EntityConfiguration
 {
     internal sealed class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
     {
-        public void Configure(EntityTypeBuilder<Order> entityBuilder)
+        public void Configure(EntityTypeBuilder<Order> entityTypeBuilder)
         {
-            entityBuilder.ToTable("orders");
+            entityTypeBuilder.ToTable("orders");
 
-            entityBuilder.HasKey(entity => entity.Id);
+            entityTypeBuilder.HasKey(entity => entity.Id);
 
-            entityBuilder
+            entityTypeBuilder
                 .Property(entity => entity.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id")
                 .IsRequired();
 
-            entityBuilder
+            entityTypeBuilder
                 .Property(entity => entity.CourierId)
                 .HasColumnName("courier_id")
                 .IsRequired(false);
 
-            entityBuilder
+            entityTypeBuilder
                 .OwnsOne(entity => entity.Status, a =>
                 {
                     a.Property(c => c.Name).HasColumnName("status").IsRequired();
                     a.WithOwner();
                 });
 
-            entityBuilder.Navigation(entity => entity.Status).IsRequired();
+            entityTypeBuilder.Navigation(entity => entity.Status).IsRequired();
 
-            entityBuilder
+            entityTypeBuilder
                 .OwnsOne(entity => entity.Location, l =>
                 {
                     l.Property(x => x.X).HasColumnName("location_x").IsRequired();
@@ -45,7 +45,7 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.EntityConfiguration
                     l.WithOwner();
                 });
 
-            entityBuilder.Navigation(entity => entity.Location).IsRequired();
+            entityTypeBuilder.Navigation(entity => entity.Location).IsRequired();
         }
     }
 }

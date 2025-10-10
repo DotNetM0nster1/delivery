@@ -1,14 +1,14 @@
 ﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using Primitives;
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Primitives;
+using System;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres
 {
-    public class UnitOfWork(ApplicationDatabaseContext applicationContext) : IUnitOfWork
+    public sealed class UnitOfWork(ApplicationDatabaseContext applicationContext) : IUnitOfWork
     {
         private readonly ApplicationDatabaseContext _applicationContext = applicationContext;
 

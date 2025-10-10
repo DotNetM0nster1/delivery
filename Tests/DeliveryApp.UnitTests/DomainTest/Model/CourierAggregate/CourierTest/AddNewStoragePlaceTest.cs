@@ -1,11 +1,7 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
-using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
+using CSharpFunctionalExtensions;
 using Primitives;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest

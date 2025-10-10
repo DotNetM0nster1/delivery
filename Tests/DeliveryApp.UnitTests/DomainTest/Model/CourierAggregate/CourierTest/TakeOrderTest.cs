@@ -1,17 +1,10 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using Microsoft.VisualBasic;
-using Primitives;
-using System;
-using System.Collections.Generic;
+using CSharpFunctionalExtensions;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 using Xunit;
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest
 {

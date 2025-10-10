@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace DeliveryApp.Core.Ports
 
         public void Update(Courier courier);
 
-        public Task<Courier> GetByIdAsync(Guid id);
+        public Task<Maybe<Courier>> GetByIdAsync(Guid id);
 
-        public Task<List<Courier>> GetAllFreeCouriers();
+        public Task<List<Courier>> GetAllFreeCouriersAsync();
     }
 }

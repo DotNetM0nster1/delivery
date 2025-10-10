@@ -1,16 +1,12 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
-using DeliveryApp.Core.Ports;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Ports;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
 {
-    public class OrderRepository(ApplicationDatabaseContext  applicationContext) : IOrderRepository
+    public sealed class OrderRepository(ApplicationDatabaseContext applicationContext) : IOrderRepository
     {
         private readonly ApplicationDatabaseContext _databaseContext = applicationContext;
 
@@ -23,39 +19,26 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
 
         public async Task<List<Order>> GetAllAssignedAsync()
         {
-            var assignedOrders = await _databaseContext
-                .Orders
+            return await _databaseContext.Orders
+                .Include(order => order.Status)
                 .Where(order => order.Status.Name == OrderStatus.Assigned.Name)
                 .ToListAsync();
-
-            if(assignedOrders == null || assignedOrders.Count == 0) 
-                throw new ArgumentNullException(nameof(OrderStatus.Assigned));
-
-            return assignedOrders;
         }
 
-        public async Task<Order> GetAsync(Guid orderId)
+        public async Task<Maybe<Order>> GetAsync(Guid orderId)
         {
             if(orderId == Guid.Empty) throw new ArgumentNullException(nameof(orderId));
 
-            var order = await _databaseContext
-                .Orders
+            return await _databaseContext.Orders
+                .Include(order => order.Status)
                 .FirstOrDefaultAsync(order => order.Id == orderId);
-
-            if(order == null) throw new ArgumentNullException(nameof(Order));
-
-            return order;
         }
 
-        public async Task<Order> GetFirstWithCreatedStatusAsync()
+        public async Task<Maybe<Order>> GetFirstWithCreatedStatusAsync()
         {
-            var order = await _databaseContext
-                .Orders
+            return await _databaseContext.Orders
+                .Include(order => order.Status)
                 .FirstOrDefaultAsync(order => order.Status.Name == OrderStatus.Created.Name);
-
-            if(order == null) throw new ArgumentNullException(nameof(Order));
-
-            return order;
         }
 
         public void Update(Order order)

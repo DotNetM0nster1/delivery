@@ -1,14 +1,11 @@
 ﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
-using DeliveryApp.Core.Domain.Model.SharedKernel;
 using DeliveryApp.Core.Domain.Services.Distribute;
+using DeliveryApp.Core.Domain.Model.SharedKernel;
+using System.Collections.Generic;
+using System.Linq;
 using Primitives;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Services.Distribute

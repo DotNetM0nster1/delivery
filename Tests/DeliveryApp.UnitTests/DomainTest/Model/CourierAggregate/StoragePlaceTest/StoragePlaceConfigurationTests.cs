@@ -1,10 +1,6 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using CSharpFunctionalExtensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.StoragePlaceTest

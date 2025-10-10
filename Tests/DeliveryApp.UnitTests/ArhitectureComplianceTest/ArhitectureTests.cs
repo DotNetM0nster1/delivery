@@ -1,10 +1,4 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
-using NetArchTest.Rules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NetArchTest.Rules;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.ArhitectureComplianceTest

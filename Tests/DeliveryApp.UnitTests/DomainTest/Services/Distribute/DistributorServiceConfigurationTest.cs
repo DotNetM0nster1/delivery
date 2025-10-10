@@ -1,12 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.SharedKernel;
-using DeliveryApp.Core.Domain.Services.Distribute;
-using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DeliveryApp.Core.Domain.Services.Distribute;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Services.Distribute

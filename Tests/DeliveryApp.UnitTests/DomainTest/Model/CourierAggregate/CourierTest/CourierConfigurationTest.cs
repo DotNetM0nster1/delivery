@@ -1,5 +1,5 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using CSharpFunctionalExtensions;
 using System;
 using Xunit;
 

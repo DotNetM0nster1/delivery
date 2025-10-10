@@ -1,18 +1,12 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
-using DeliveryApp.Core.Ports;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Ports;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
 {
-    public class CourierRepository(ApplicationDatabaseContext applicationContext) : ICourierRepository
+    public sealed class CourierRepository(ApplicationDatabaseContext applicationContext) : ICourierRepository
     {
         private readonly ApplicationDatabaseContext _applicationContext = applicationContext;
 
@@ -31,29 +25,28 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
             await _applicationContext.Couriers.AddRangeAsync(couriers);
         }
 
-        public async Task<List<Courier>> GetAllFreeCouriers()
+        public async Task<List<Courier>> GetAllFreeCouriersAsync()
         {
-            var couriers = await _applicationContext.Couriers.Where(courier => 
-                courier.StoragePlaces.Where(storagePlace => 
-                    storagePlace.OrderId == null).Count() == courier.StoragePlaces.Count)
+            return await _applicationContext.Couriers
+                .Include(courier => courier.StoragePlaces)
+                .Where(courier => courier.StoragePlaces.All(couriers => couriers.OrderId == null))
                 .ToListAsync();
-
-            if(couriers == null || couriers.Count == 0)
-                throw new ArgumentNullException(nameof(Courier));
-
-            return couriers;
         }
 
-        public async Task<Courier> GetByIdAsync(Guid courierId)
+        public async Task<Maybe<Courier>> GetByIdAsync(Guid courierId)
         {
             if(courierId == Guid.Empty) throw new ArgumentNullException(nameof(Courier));
 
-            var courier = await _applicationContext.Couriers.FirstOrDefaultAsync(courier => courier.Id == courierId)
-                ?? throw new ArgumentNullException(nameof(Courier));
-
-            return courier;
+            return await _applicationContext.Couriers
+                .Include(courier => courier.StoragePlaces)
+                .FirstOrDefaultAsync(courier => courier.Id == courierId);
         }
 
-        public void Update(Courier courier) => _applicationContext.Couriers.Update(courier);
+        public void Update(Courier courier)
+        {
+            if (courier == null) throw new ArgumentNullException(nameof(courier));
+
+            _applicationContext.Couriers.Update(courier);
+        }
     }
 }

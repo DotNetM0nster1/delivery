@@ -1,8 +1,6 @@
 ﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using Primitives;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.CourierAggregate.CourierTest

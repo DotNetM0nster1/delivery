@@ -1,10 +1,5 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.SharedKernel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DeliveryApp.Core.Domain.Model.SharedKernel;
+using CSharpFunctionalExtensions;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.SharedKernel.LocationTests

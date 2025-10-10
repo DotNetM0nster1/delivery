@@ -1,16 +1,10 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -81,7 +75,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
         }
 
         [Fact]
-        public async Task WhenGettingAllFreeCouriers_AndFreeCouriersNotFound_ThenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenGettingAllFreeCouriers_AndFreeCouriersNotFound_ThenMethodShouldBeReturnZeroCountCouriers()
         {
             //Arrange
             var courierRepository = new CourierRepository(_databaseContext);
@@ -109,7 +103,8 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await unitOfWork.SaveChangesAsync();
 
             //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await courierRepository.GetAllFreeCouriers());
+            var getAllCouriuersResult = await courierRepository.GetAllFreeCouriersAsync();
+            Assert.True(getAllCouriuersResult.Count == 0);
         }
 
         [Fact]
@@ -139,7 +134,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await unitOfWork.SaveChangesAsync();
 
             //Act
-            var allFreeCouriersResult = await courierRepository.GetAllFreeCouriers();
+            var allFreeCouriersResult = await courierRepository.GetAllFreeCouriersAsync();
 
             //Assert
             Assert.True(allFreeCouriersResult.Count == 2);
@@ -217,7 +212,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
         }
 
         [Fact]
-        public async Task WhenGettingCuorierById_AndCourierIsNotFound_ThenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenGettingCuorierById_AndCourierIsNotFound_ThenMethodShouldBeReturnNoValue()
         {
             //Arrange
             var courierRepository = new CourierRepository(_databaseContext);
@@ -226,7 +221,8 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var courierId = Guid.NewGuid();
 
             //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await courierRepository.GetByIdAsync(courierId));
+            var getCourierByIdResult = await courierRepository.GetByIdAsync(courierId);
+            Assert.True(getCourierByIdResult.HasNoValue);
         }
 
         [Fact]
@@ -279,7 +275,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 
             //Assert
             var courierInDatabase = await courierRepository.GetByIdAsync(courier.Id);
-            Assert.Equal(courierInDatabase, courier);
+            Assert.Equal(courierInDatabase.Value, courier);
         }
 
         [Fact]
@@ -305,8 +301,6 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var courierName = "Vasiliy Maslakov";
             var courier = Courier.Create(courierSpeed, courierName, currentCurierLocation).Value;
 
-            var tempCourier = Courier.Create(courier.Speed, courier.Name, courier.Location).Value;
-
             courier.AddNewStoragePlace("name", 25);
 
             await courierRepository.AddAsync(courier);
@@ -316,7 +310,8 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             courierRepository.Update(courier);
 
             //Assert
-            Assert.NotEqual(await courierRepository.GetByIdAsync(courier.Id), tempCourier);
+            var courierInDb = await courierRepository.GetByIdAsync(courier.Id);
+            Assert.Equal(courierInDb.Value, courier);
         }
     }
 }

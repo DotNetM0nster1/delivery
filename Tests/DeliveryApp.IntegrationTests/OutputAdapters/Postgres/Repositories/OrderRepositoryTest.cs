@@ -1,17 +1,10 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
-using DotNet.Testcontainers.Builders;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -79,7 +72,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
         }
 
         [Fact]
-        public async Task WhenGettingAllAssignedOrders_AndAssignedOrdersNotExist_WhenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenGettingAllAssignedOrders_AndAssignedOrdersNotExist_WhenMethodShouldBeReturnZeroAssignedOrders()
         {
             //Arrange
             var orderTotalVolume = 5;
@@ -90,11 +83,12 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var orderReposetory = new OrderRepository(_databaseContext);
 
             //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>  await orderReposetory.GetAllAssignedAsync());
+            var ordersInDatabase = await orderReposetory.GetAllAssignedAsync();
+            Assert.True(ordersInDatabase.Count == 0);
         }
 
         [Fact]
-        public async Task WhenGettingAllAssignedOrders_AndSomeOfAssignedOrdersExist_WhenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenGettingAllAssignedOrders_AndSomeOfAssignedOrdersExist_WhenMethodShouldBeReturnSomeOfAssignedOrders()
         {
             //Arrange
             var orderReposetory = new OrderRepository(_databaseContext);
@@ -149,7 +143,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
         }
 
         [Fact]
-        public async Task WhenGettingOrderByGuidId_AndGuidIdIsCorrect_AndOrderIsNotFound_ThenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenGettingOrderByGuidId_AndGuidIdIsCorrect_AndOrderIsNotFound_ThenMethodShouldBeReturnNoneOrder()
         {
             //Arrange
             var orderReposetory = new OrderRepository(_databaseContext);
@@ -157,8 +151,11 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 
             var orderId = Guid.NewGuid();
 
-            //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await orderReposetory.GetAsync(orderId));
+            //Act
+            var orderInDatabase = await orderReposetory.GetAsync(orderId);
+
+            //Assert
+            Assert.True(orderInDatabase.HasNoValue);
         }
 
         [Fact]
@@ -182,15 +179,15 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var getOrderResult = await orderReposetory.GetAsync(orderId);
 
             //Assert
-            Assert.Equal(getOrderResult.Id, order.Id);
-            Assert.Equal(getOrderResult.Status, order.Status);
-            Assert.Equal(getOrderResult.Volume, order.Volume);
-            Assert.Equal(getOrderResult.Location.X, order.Location.X);
-            Assert.Equal(getOrderResult.Location.Y, order.Location.Y);
+            Assert.Equal(getOrderResult.Value.Id, order.Id);
+            Assert.Equal(getOrderResult.Value.Status, order.Status);
+            Assert.Equal(getOrderResult.Value.Volume, order.Volume);
+            Assert.Equal(getOrderResult.Value.Location.X, order.Location.X);
+            Assert.Equal(getOrderResult.Value.Location.Y, order.Location.Y);
         }
 
         [Fact]
-        public async Task WhenGettingFirstCreatedOrder_AndExistOnlyAssignedAndComplitedOrders_ThenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenGettingFirstCreatedOrder_AndExistOnlyAssignedAndComplitedOrders_ThenMethodShouldBeReturnNoneOrder()
         {
             //Arrange
             var orderReposetory = new OrderRepository(_databaseContext);
@@ -230,12 +227,15 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             secondOrder.Assign(secondCourier);
             secondOrder.Complete();
 
-            //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await orderReposetory.GetFirstWithCreatedStatusAsync());
+            //Act
+            var orderInDatabase = await orderReposetory.GetFirstWithCreatedStatusAsync();
+
+            //Assert
+            Assert.True(orderInDatabase.HasNoValue);
         }
 
         [Fact]
-        public async Task WhenGettingFirstCreatedOrder_AndOrderWithCreatedStatusIsExist_ThenMethodShouldBe()
+        public async Task WhenGettingFirstCreatedOrder_AndOrderWithCreatedStatusIsExist_ThenMethodShouldBeReturnOrderWithCreatedStatus()
         {
             //Arrange
             var orderReposetory = new OrderRepository(_databaseContext);
@@ -284,7 +284,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
         public async Task WhenUpdatingOrder_AndOrderNotHaveChanges_ThenMethodShouldntBeUpdateOrder()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
+            var orderRepository = new OrderRepository(_databaseContext);
             var unitOfWork = new UnitOfWork(_databaseContext);
 
             var orderX = 7;
@@ -302,16 +302,16 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var courierName = "Speed Man";
             var courier = Courier.Create(courierSpeed, courierName, location).Value;
 
-            await orderReposetory.AddAsync(order);
+            await orderRepository.AddAsync(order);
             await unitOfWork.SaveChangesAsync();
 
             //Act
-            orderReposetory.Update(order);
+            orderRepository.Update(order);
 
             await unitOfWork.SaveChangesAsync();
 
             //Assert
-            var orderInDatabase = await orderReposetory.GetAsync(order.Id);
+            var orderInDatabase = await orderRepository.GetAsync(order.Id);
             Assert.Equal(orderInDatabase, order);
         }
 
@@ -319,8 +319,20 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
         public async Task WhenUpdatingOrder_AndOrderIsHaveChanges_AndOrderStatusWillBeChanged_ThenMethodShouldBeUpdateOrder()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
+            var databaseContext = new DbContextOptionsBuilder<ApplicationDatabaseContext>()
+                .UseNpgsql(_postgreSqlContainer.GetConnectionString(), options =>
+                {
+                    options.MigrationsAssembly("DeliveryApp.Infrastructure");
+                })
+                .Options;
+
+            var dbContext2 = new ApplicationDatabaseContext(databaseContext);
+
+            var orderRepositoryWithNewDbContext = new OrderRepository(dbContext2);
+            var unitOfWorkWithNewDbContext = new UnitOfWork(dbContext2);
+
             var unitOfWork = new UnitOfWork(_databaseContext);
+            var orderRepository = new OrderRepository(_databaseContext);
 
             var orderX = 2;
             var orderY = 3;
@@ -337,19 +349,19 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var courierName = "Slow Man";
             var courier = Courier.Create(courierSpeed, courierName, location).Value;
 
-            await orderReposetory.AddAsync(order);
+            await orderRepository.AddAsync(order);
             await unitOfWork.SaveChangesAsync();
 
             //Act
             order.Assign(courier);
 
-            orderReposetory.Update(order);
+            orderRepositoryWithNewDbContext.Update(order);
 
-            await unitOfWork.SaveChangesAsync();
+            await unitOfWorkWithNewDbContext.SaveChangesAsync();
 
             //Assert
-            var orderInDatabase = await orderReposetory.GetAsync(order.Id);
-            Assert.Equal("assigned", orderInDatabase.Status.Name);
+            var orderInDatabase = await orderRepositoryWithNewDbContext.GetAsync(order.Id);
+            Assert.Equal("assigned", orderInDatabase.Value.Status.Name);
         }
     }
 }

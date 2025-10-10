@@ -13,36 +13,38 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.EntityConfiguration
 {
     internal sealed class CourierEntityTypeConfiguration : IEntityTypeConfiguration<Courier>
     {
-        public void Configure(EntityTypeBuilder<Courier> entityBuilder)
+        public void Configure(EntityTypeBuilder<Courier> entityTypeBuilder)
         {
-            entityBuilder.ToTable("couriers");
+            entityTypeBuilder.ToTable("couriers");
 
-            entityBuilder.HasKey(courier => courier.Id);
+            entityTypeBuilder.HasKey(entity => entity.Id);
 
-            entityBuilder
-                .Property(courier => courier.Id)
+            entityTypeBuilder
+                .Property(entity => entity.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id")
                 .IsRequired();
 
-            entityBuilder
-                .Property(courier => courier.Name)
+            entityTypeBuilder
+                .Property(entity => entity.Name)
                 .HasColumnName("name")
                 .IsRequired();
 
-            entityBuilder
-                .Property(courier => courier.Speed)
+            entityTypeBuilder
+                .Property(entity => entity.Speed)
                 .HasColumnName("speed")
                 .IsRequired();
 
-            entityBuilder.OwnsOne(courier => courier.Location, location =>
-            {
-                location.Property(x => x.X).HasColumnName("x").IsRequired();
-                location.Property(y => y.Y).HasColumnName("y").IsRequired();
-                location.WithOwner();
-            });
+            entityTypeBuilder
+                .OwnsOne(entity => entity.Location, l =>
+                {
+                    l.Property(x => x.X).HasColumnName("location_x").IsRequired();
+                    l.Property(y => y.Y).HasColumnName("location_y").IsRequired();
+                    l.WithOwner();
+                });
 
-            entityBuilder.Navigation(courier => courier.Location).IsRequired();
+            entityTypeBuilder.Navigation(entity => entity.Location).IsRequired();
         }
+
     }
 }

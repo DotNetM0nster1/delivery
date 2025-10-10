@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace DeliveryApp.Core.Ports
 
         public void Update(Order order);
 
-        public Task<Order> GetAsync(Guid id);
+        public Task<Maybe<Order>> GetAsync(Guid id);
 
-        public Task<Order> GetFirstWithCreatedStatusAsync();
+        public Task<Maybe<Order>> GetFirstWithCreatedStatusAsync();
 
         public Task<List<Order>> GetAllAssignedAsync();
     }

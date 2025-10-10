@@ -18,8 +18,8 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     speed = table.Column<int>(type: "integer", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    x = table.Column<int>(type: "integer", nullable: false),
-                    y = table.Column<int>(type: "integer", nullable: false)
+                    location_x = table.Column<int>(type: "integer", nullable: false),
+                    location_y = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,22 +50,23 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
                     name = table.Column<string>(type: "text", nullable: false),
                     total_volume = table.Column<int>(type: "integer", nullable: false),
                     order_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    CourierId = table.Column<Guid>(type: "uuid", nullable: true)
+                    courier_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_storage_places", x => x.id);
                     table.ForeignKey(
-                        name: "FK_storage_places_couriers_CourierId",
-                        column: x => x.CourierId,
+                        name: "FK_storage_places_couriers_courier_id",
+                        column: x => x.courier_id,
                         principalTable: "couriers",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_storage_places_CourierId",
+                name: "IX_storage_places_courier_id",
                 table: "storage_places",
-                column: "CourierId");
+                column: "courier_id");
         }
 
         /// <inheritdoc />
