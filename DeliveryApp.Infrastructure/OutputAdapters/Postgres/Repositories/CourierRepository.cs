@@ -12,39 +12,52 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
 
         public async Task AddAsync(Courier courier)
         {
-            if (courier == null) throw new ArgumentNullException(nameof(courier));
+            if (courier == null)
+            {
+                throw new ArgumentNullException(nameof(courier));
+            }
 
             await _applicationContext.Couriers.AddAsync(courier);
         }
 
         public async Task AddRangeAsync(IEnumerable<Courier> couriers)
         {
-            if (couriers == null || couriers.Count() == 0) 
+            if (couriers == null || couriers.Count() == 0)
+            {
                 throw new ArgumentNullException(nameof(couriers));
+            }
 
             await _applicationContext.Couriers.AddRangeAsync(couriers);
         }
 
+        public async Task<Maybe<Courier>> GetByIdAsync(Guid courierId)
+        {
+            if (courierId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(Courier));
+            }
+
+            return await _applicationContext
+                .Couriers
+                .Include(courier => courier.StoragePlaces)
+                .FirstOrDefaultAsync(courier => courier.Id == courierId);
+        }
+
         public async Task<List<Courier>> GetAllFreeCouriersAsync()
         {
-            return await _applicationContext.Couriers
+            return await _applicationContext
+                .Couriers
                 .Include(courier => courier.StoragePlaces)
                 .Where(courier => courier.StoragePlaces.All(couriers => couriers.OrderId == null))
                 .ToListAsync();
         }
 
-        public async Task<Maybe<Courier>> GetByIdAsync(Guid courierId)
-        {
-            if(courierId == Guid.Empty) throw new ArgumentNullException(nameof(Courier));
-
-            return await _applicationContext.Couriers
-                .Include(courier => courier.StoragePlaces)
-                .FirstOrDefaultAsync(courier => courier.Id == courierId);
-        }
-
         public void Update(Courier courier)
         {
-            if (courier == null) throw new ArgumentNullException(nameof(courier));
+            if (courier == null)
+            {
+                throw new ArgumentNullException(nameof(courier));
+            }
 
             _applicationContext.Couriers.Update(courier);
         }

@@ -25,10 +25,14 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         public static Result<Location, Error> Create(int x, int y)
         {
             if (x > MaxCoordinateValue || x < MinCoordinateValue)
+            {
                 return GeneralErrors.ValueIsInvalid(nameof(x));
+            }
 
             if (y > MaxCoordinateValue || y < MinCoordinateValue)
+            {
                 return GeneralErrors.ValueIsInvalid(nameof(y));
+            }
 
             return new Location(x, y);
         }
@@ -45,8 +49,10 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
 
         public Result<int, Error> CalculateDistanceToTargetLocation(Location targetLocation)
         {
-            if(targetLocation == null)
+            if (targetLocation == null)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
+            }
 
             var stepsCountByCoordinateX = Math.Abs(X - targetLocation.X);
             var stepsCountByCoordinateY = Math.Abs(Y - targetLocation.Y);

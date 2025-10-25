@@ -12,38 +12,47 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
 
         public async Task AddAsync(Order order)
         {
-            if(order == null) throw new ArgumentNullException(nameof(order));
+            if (order == null)
+            {
+                throw new ArgumentNullException(nameof(order));
+            }
 
             await _databaseContext.Orders.AddAsync(order);
         }
 
-        public async Task<List<Order>> GetAllAssignedAsync()
+        public async Task<Maybe<Order>> GetByIdAsync(Guid orderId)
         {
-            return await _databaseContext.Orders
-                .Include(order => order.Status)
-                .Where(order => order.Status.Name == OrderStatus.Assigned.Name)
-                .ToListAsync();
-        }
+            if (orderId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(orderId));
+            }
 
-        public async Task<Maybe<Order>> GetAsync(Guid orderId)
-        {
-            if(orderId == Guid.Empty) throw new ArgumentNullException(nameof(orderId));
-
-            return await _databaseContext.Orders
-                .Include(order => order.Status)
+            return await _databaseContext
+                .Orders
                 .FirstOrDefaultAsync(order => order.Id == orderId);
         }
 
         public async Task<Maybe<Order>> GetFirstWithCreatedStatusAsync()
         {
-            return await _databaseContext.Orders
-                .Include(order => order.Status)
+            return await _databaseContext
+                .Orders
                 .FirstOrDefaultAsync(order => order.Status.Name == OrderStatus.Created.Name);
+        }
+
+        public async Task<List<Order>> GetAllAssignedAsync()
+        {
+            return await _databaseContext
+                .Orders
+                .Where(order => order.Status.Name == OrderStatus.Assigned.Name)
+                .ToListAsync();
         }
 
         public void Update(Order order)
         {
-            if(order == null) throw new ArgumentNullException(nameof(order));
+            if (order == null)
+            {
+                throw new ArgumentNullException(nameof(order));
+            }
 
             _databaseContext.Orders.Update(order);
         }

@@ -29,17 +29,29 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         public static Result<StoragePlace, Error> Create(string name, int volume) 
         {
             if (string.IsNullOrWhiteSpace(name))
+            {
                 return GeneralErrors.ValueIsInvalid(nameof(name));
+            }
 
             if (volume <= 0)
+            {
                 return GeneralErrors.ValueIsInvalid(nameof(volume));
+            }
 
             return new StoragePlace(name, volume);
         }
 
         public Result<bool, Error> IsOrderCorrectForAdd(Order order)
         {
-            if (order == null) return GeneralErrors.ValueIsRequired(nameof(order));
+            if (order == null)
+            {
+                return GeneralErrors.ValueIsRequired(nameof(order));
+            }
+
+            if (IsCourierBusy())
+            {
+                return false;
+            }
 
             return order.Volume <= TotalVolume && OrderId == null;
         }
@@ -47,7 +59,9 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         public UnitResult<Error> AddOrder(Order order)
         {
             if (IsOrderCorrectForAdd(order) is var isCorrect && (!isCorrect.Value || isCorrect.IsFailure))
+            {
                 return GeneralErrors.OrderCannotBeStored(isCorrect.IsFailure ? isCorrect.Error : null);
+            }
 
             OrderId = order.Id;
 
@@ -56,7 +70,10 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public UnitResult<Error> RemoveOrder()
         {
-            if(OrderId == null) return GeneralErrors.ValueIsInvalid(nameof(OrderId));
+            if (OrderId == null)
+            {
+                return GeneralErrors.ValueIsInvalid(nameof(OrderId));
+            }
 
             OrderId = null;
 

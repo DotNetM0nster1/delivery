@@ -1,12 +1,7 @@
 ﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using CSharpFunctionalExtensions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Text;
 using Primitives;
-using System;
 
 namespace DeliveryApp.Core.Domain.Services.Distribute
 {
@@ -15,19 +10,32 @@ namespace DeliveryApp.Core.Domain.Services.Distribute
         public Result<UnitResult<Error>, Error> DistributeOrderOnCouriers(Order order, List<Courier> couriers)
         {
             if (order == null)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(order));
+            }
 
             if (couriers == null || couriers.Count == 0)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(couriers));
+            }
 
-            if (GetMostSituableCourierForOrder(couriers, order) is var situableCourierResult && situableCourierResult.IsFailure)
+            if (GetMostSituableCourierForOrder(couriers, order) is 
+                var situableCourierResult && situableCourierResult.IsFailure)
+            {
                 return GeneralErrors.OrderCannotBeDistributedError(situableCourierResult.Error);
+            }
 
-            if(order.Assign(situableCourierResult.Value) is var assignOrderResult && assignOrderResult.IsFailure)
+            if (order.Assign(situableCourierResult.Value) is 
+                var assignOrderResult && assignOrderResult.IsFailure)
+            {
                 return GeneralErrors.OrderCannotBeDistributedError(assignOrderResult.Error);
+            }
 
-            if(situableCourierResult.Value.TakeOrder(order) is var takingOrderResult && takingOrderResult.IsFailure) 
+            if (situableCourierResult.Value.TakeOrder(order) is 
+                var takingOrderResult && takingOrderResult.IsFailure)
+            {
                 return GeneralErrors.OrderCannotBeDistributedError(takingOrderResult.Error);
+            }
 
             return UnitResult.Success<Error>();
         }
@@ -38,17 +46,29 @@ namespace DeliveryApp.Core.Domain.Services.Distribute
 
             foreach (var courier in couriers)
             {
-                if (courier.IsCanTakeOrder(order) is var isCanTakeOrderResult && (isCanTakeOrderResult.IsFailure || !isCanTakeOrderResult.Value))
+                if (courier.IsCanTakeOrder(order) is 
+                    var isCanTakeOrderResult && (isCanTakeOrderResult.IsFailure || !isCanTakeOrderResult.Value))
+                {
                     continue;
+                }
 
-                if (courier.GetStepsCountToTargetLocation(order.Location) is var courierStepsToTargetLocationResult && !courierAndStepsPair.ContainsKey(courier))
+                if (courier.GetStepsCountToTargetLocation(order.Location) is 
+                    var courierStepsToTargetLocationResult && !courierAndStepsPair.ContainsKey(courier))
+                {
                     courierAndStepsPair[courier] = courierStepsToTargetLocationResult.Value;
+                }
             }
 
             if (courierAndStepsPair.Count == 0)
+            {
                 return GeneralErrors.NotFoundMatchingCourierForOrder();
+            }
 
-            var matchingCourier = courierAndStepsPair.OrderByDescending(steps => steps.Value).Select(courier => courier).Last().Key;
+            var matchingCourier = courierAndStepsPair
+                .OrderByDescending(steps => steps.Value)
+                    .Select(courier => courier)
+                    .Last()
+                .Key;
 
             return matchingCourier;
         }

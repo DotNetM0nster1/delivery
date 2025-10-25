@@ -1,367 +1,206 @@
-﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
-using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using Microsoft.EntityFrameworkCore;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
+using FluentAssertions;
 using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 {
-    public class OrderRepositoryTest : IAsyncLifetime
+    public class OrderRepositoryTest : RepositoryBase<OrderRepository>, IAsyncLifetime 
     {
-        private ApplicationDatabaseContext _databaseContext;
-
         private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
             .WithImage("postgres:14.7")
-            .WithDatabase("order")
-            .WithName("ordername")
-            .WithPassword("orderpassword")
+            .WithDatabase("database")
+            .WithName("order_repos")
+            .WithPassword("password")
             .WithCleanUp(true)
             .Build();
 
-        public async Task DisposeAsync() => await _postgreSqlContainer.DisposeAsync().AsTask();
+        public async Task InitializeAsync() => await InitializeAsync(_postgreSqlContainer);
 
-        public async Task InitializeAsync()
-        {
-            await _postgreSqlContainer.StartAsync();
-
-            var databaseContext = new DbContextOptionsBuilder<ApplicationDatabaseContext>()
-                .UseNpgsql(_postgreSqlContainer.GetConnectionString(), options => 
-                    { 
-                        options.MigrationsAssembly("DeliveryApp.Infrastructure"); 
-                    })
-                .Options;
-
-            _databaseContext = new ApplicationDatabaseContext(databaseContext);
-            _databaseContext.Database.Migrate();
-        }
+        public async Task DisposeAsync() => await DisposeAsync(_postgreSqlContainer);
 
         [Fact]
-        public async Task WhenAddingOrder_AndOrderIsNull_WhenMethodSholdBeThrowNullArgumentException()
+        public async Task WhenAddingOrder_AndOrderIsNull_WhenMethodSholdBeThrowArgumentNullException()
         {
             //Arrange
-            Order order = null;
-            var orderReposetory = new OrderRepository(_databaseContext);
-
+            Func<Task> func = async () =>
+            {
+                await Repository.AddAsync(null);
+            };
+            
             //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await orderReposetory.AddAsync(order));
+            await func.Should().ThrowExactlyAsync<ArgumentNullException>();
         }
 
         [Fact]
-        public async Task WhenAddingOrder_AndOrderIsNotNullAndCorrect_WhenMethodSholdBeAddOrder()
+        public async Task WhenAddingOrder_AndOrderIsCorrect_WhenMethodSholdBeAddOrder()
         {
             //Arrange
-            var orderTotalVolume = 20;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(3, 9).Value;
-            var order = Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            var orderReposetory = new OrderRepository(_databaseContext);
-
-            var unitOfWork = new UnitOfWork(_databaseContext);
+            var order = Order.Create(Guid.NewGuid(), Location.Create(3, 9).Value, 20).Value;
 
             //Act
-            await orderReposetory.AddAsync(order);
-            await unitOfWork.SaveChangesAsync();
+            await Repository.AddAsync(order);
+            await UnitOfWork.SaveChangesAsync();
 
             //Assert
-            Assert.Equal(await orderReposetory.GetAsync(order.Id), order);
+            var getOrderByIdResult = await Repository.GetByIdAsync(order.Id);
+            getOrderByIdResult.Value.Should().BeSameAs(order);
         }
 
         [Fact]
         public async Task WhenGettingAllAssignedOrders_AndAssignedOrdersNotExist_WhenMethodShouldBeReturnZeroAssignedOrders()
         {
             //Arrange
-            var orderTotalVolume = 5;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(1, 1).Value;
-            var order = Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            var orderReposetory = new OrderRepository(_databaseContext);
+            var order = Order.Create(Guid.NewGuid(), Location.Create(1, 1).Value, 5).Value;
 
             //Act-Assert
-            var ordersInDatabase = await orderReposetory.GetAllAssignedAsync();
-            Assert.True(ordersInDatabase.Count == 0);
+            var getAllAssignedOrdersResult = await Repository.GetAllAssignedAsync();
+            getAllAssignedOrdersResult.Count.Should().Be(0);
         }
 
         [Fact]
         public async Task WhenGettingAllAssignedOrders_AndSomeOfAssignedOrdersExist_WhenMethodShouldBeReturnSomeOfAssignedOrders()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
-
-            var orderX = 5;
-            var orderY = 7;
-            var orderTotalVolume = 5;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(orderX, orderY).Value;
-            var order = Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            var courierX = 3;
-            var courierY = 8;
-            var location = Location.Create(courierX, courierY).Value;
-
-            var courierSpeed = 1;
-            var courierName = "Maxim Zakotsky";
-            var courier = Courier.Create(courierSpeed, courierName, location).Value;
+            var courier = Courier.Create(1, "Maxim Zakotsky", Location.Create(3, 8).Value).Value;
+            var order = Order.Create(Guid.NewGuid(), Location.Create(5, 7).Value, 5).Value;
 
             order.Assign(courier);
 
-            await orderReposetory.AddAsync(order);
-            await unitOfWork.SaveChangesAsync();
+            await Repository.AddAsync(order);
+            await UnitOfWork.SaveChangesAsync();
 
             //Act
-            var allAssignedOrdersResult = await orderReposetory.GetAllAssignedAsync();
+            var getAllAssignedOrdersResult = await Repository.GetAllAssignedAsync();
 
             //Assert
-            var assignedOrder = allAssignedOrdersResult.First();
-
-            Assert.True(assignedOrder.Id == order.Id);
-            Assert.True(allAssignedOrdersResult.Count == 1);
-            Assert.True(assignedOrder.Location.X == orderX);
-            Assert.True(assignedOrder.Location.Y == orderY);
-            Assert.True(assignedOrder.Volume == order.Volume);
-            Assert.True(assignedOrder.CourierId == courier.Id);
-            Assert.True(assignedOrder.Status == OrderStatus.Assigned);
+            var assignedOrder = getAllAssignedOrdersResult.First();
+            assignedOrder.CourierId.Should().Be(courier.Id);
+            assignedOrder.Should().BeSameAs(order);
         }
 
         [Fact]
         public async Task WhenGettingOrderByGuidId_AndGuidIdIsEmpty_ThenMethodShouldBeThrowArgumentNullException()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
-
-            var orderId = Guid.Empty;
+            Func<Task> func = async () => 
+            {
+                await Repository.GetByIdAsync(Guid.Empty);
+            };
 
             //Act-Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await orderReposetory.GetAsync(orderId));
+            await func.Should().ThrowExactlyAsync<ArgumentNullException>();
         }
 
         [Fact]
         public async Task WhenGettingOrderByGuidId_AndGuidIdIsCorrect_AndOrderIsNotFound_ThenMethodShouldBeReturnNoneOrder()
         {
-            //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
-
-            var orderId = Guid.NewGuid();
-
-            //Act
-            var orderInDatabase = await orderReposetory.GetAsync(orderId);
+            //Arrange-Act
+            var fakeOrderId = Guid.NewGuid();
+            var orderInDatabase = await Repository.GetByIdAsync(fakeOrderId);
 
             //Assert
-            Assert.True(orderInDatabase.HasNoValue);
+            orderInDatabase.HasNoValue.Should().BeTrue();
         }
 
         [Fact]
         public async Task WhenGettingOrderByGuidId_AndGuidIdIsCorrect_AndOrderIsFound_ThenMethodShouldBeReturnOrder()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
+            var order = Order.Create(Guid.NewGuid(), Location.Create(6, 4).Value, 9).Value;
 
-            var orderX = 6;
-            var orderY = 4;
-            var orderTotalVolume = 9;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(orderX, orderY).Value;
-            var order = Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            await orderReposetory.AddAsync(order);
-            await unitOfWork.SaveChangesAsync();
+            await Repository.AddAsync(order);
+            await UnitOfWork.SaveChangesAsync();
 
             //Act
-            var getOrderResult = await orderReposetory.GetAsync(orderId);
+            var getOrderResult = await Repository.GetByIdAsync(order.Id);
 
             //Assert
-            Assert.Equal(getOrderResult.Value.Id, order.Id);
-            Assert.Equal(getOrderResult.Value.Status, order.Status);
-            Assert.Equal(getOrderResult.Value.Volume, order.Volume);
-            Assert.Equal(getOrderResult.Value.Location.X, order.Location.X);
-            Assert.Equal(getOrderResult.Value.Location.Y, order.Location.Y);
+            getOrderResult.Value.Should().BeSameAs(order);
         }
 
         [Fact]
         public async Task WhenGettingFirstCreatedOrder_AndExistOnlyAssignedAndComplitedOrders_ThenMethodShouldBeReturnNoneOrder()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
-
-            var firstrderX = 5;
-            var firstOrderY = 7;
-            var firstOrderTotalVolume = 5;
-            var firstOrderId = Guid.NewGuid();
-            var firstOrderLocation = Location.Create(firstrderX, firstOrderY).Value;
-            var firstOrder = Order.Create(firstOrderId, firstOrderLocation, firstOrderTotalVolume).Value;
-
-            var secondrderX = 9;
-            var secondOrderY = 1;
-            var secondOrderTotalVolume = 7;
-            var secondOrderId = Guid.NewGuid();
-            var secondOrderLocation = Location.Create(secondrderX, secondOrderY).Value;
-            var secondOrder = Order.Create(secondOrderId, secondOrderLocation, secondOrderTotalVolume).Value;
-
-            var firstCourierX = 3;
-            var firstCourierY = 8;
-            var firstLocation = Location.Create(firstCourierX, firstCourierY).Value;
-
-            var firstCourierSpeed = 4;
-            var firstCourierName = "Denis Denisovich";
-            var firstCourier = Courier.Create(firstCourierSpeed, firstCourierName, firstLocation).Value;
-
-            var secondCourierX = 3;
-            var secondCourierY = 8;
-            var secondLocation = Location.Create(secondCourierX, secondCourierY).Value;
-
-            var secondCourierSpeed = 6;
-            var secondCourierName = "Denis Denisovich";
-            var secondCourier = Courier.Create(secondCourierSpeed, secondCourierName, secondLocation).Value;
+            var firstOrder = Order.Create(Guid.NewGuid(), Location.Create(5, 7).Value, 5).Value;
+            var secondOrder = Order.Create(Guid.NewGuid(), Location.Create(9, 1).Value, 7).Value;
+            var firstCourier = Courier.Create(4, "Denis Denisovich", Location.Create(3, 8).Value).Value;
+            var secondCourier = Courier.Create(6, "Denis Denisovich", Location.Create(3, 8).Value).Value;
 
             firstOrder.Assign(firstCourier);
             secondOrder.Assign(secondCourier);
             secondOrder.Complete();
 
+            await Repository.AddAsync(firstOrder);
+            await Repository.AddAsync(secondOrder);
+            await UnitOfWork.SaveChangesAsync();
+
             //Act
-            var orderInDatabase = await orderReposetory.GetFirstWithCreatedStatusAsync();
+            var getFirstOrderWithCreatedStatusResult = await Repository.GetFirstWithCreatedStatusAsync();
 
             //Assert
-            Assert.True(orderInDatabase.HasNoValue);
+            getFirstOrderWithCreatedStatusResult.HasNoValue.Should().BeTrue();
         }
 
         [Fact]
         public async Task WhenGettingFirstCreatedOrder_AndOrderWithCreatedStatusIsExist_ThenMethodShouldBeReturnOrderWithCreatedStatus()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
+            var order = Order.Create(Guid.NewGuid(), Location.Create(1, 2).Value, 3).Value;
+            var courier = Courier.Create(4, "Valery Orehov", Location.Create(2, 3).Value).Value;
 
-            var orderX = 1;
-            var orderY = 2;
-            var orderTotalVolume = 3;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(orderX, orderY).Value;
-            var order = Core.Domain.Model.OrderAggregate.Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            var courierX = 2;
-            var courierY = 3;
-            var location = Location.Create(courierX, courierY).Value;
-
-            var courierSpeed = 4;
-            var courierName = "Valery Orehov";
-            var courier = Courier.Create(courierSpeed, courierName, location).Value;
-
-            await orderReposetory.AddAsync(order);
-            await unitOfWork.SaveChangesAsync();
+            await Repository.AddAsync(order);
+            await UnitOfWork.SaveChangesAsync();
 
             //Act
-            var getFirstOrderWithCreatedStatusResult = await orderReposetory.GetFirstWithCreatedStatusAsync();
+            var getFirstOrderWithCreatedStatusResult = await Repository.GetFirstWithCreatedStatusAsync();
 
             //Assert
-            Assert.Equal(getFirstOrderWithCreatedStatusResult, order);
+            getFirstOrderWithCreatedStatusResult.Value.Should().BeSameAs(order);
         }
 
         [Fact]
         public void WhenUpdatingOrder_AndOrderIsNull_ThenMethodShouldBeThrowArgumentNullException()
         {
             //Arrange
-            var orderReposetory = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
-            
-            //Act
-            Order order = null;
+            Action action = () => 
+            {
+                Repository.Update(null);
+            };
 
-            //Assert
-            Assert.Throws<ArgumentNullException>(() => orderReposetory.Update(order));
-        }
-
-        [Fact]
-        public async Task WhenUpdatingOrder_AndOrderNotHaveChanges_ThenMethodShouldntBeUpdateOrder()
-        {
-            //Arrange
-            var orderRepository = new OrderRepository(_databaseContext);
-            var unitOfWork = new UnitOfWork(_databaseContext);
-
-            var orderX = 7;
-            var orderY = 4;
-            var orderTotalVolume = 8;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(orderX, orderY).Value;
-            var order = Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            var courierX = 3;
-            var courierY = 5;
-            var location = Location.Create(courierX, courierY).Value;
-
-            var courierSpeed = 9;
-            var courierName = "Speed Man";
-            var courier = Courier.Create(courierSpeed, courierName, location).Value;
-
-            await orderRepository.AddAsync(order);
-            await unitOfWork.SaveChangesAsync();
-
-            //Act
-            orderRepository.Update(order);
-
-            await unitOfWork.SaveChangesAsync();
-
-            //Assert
-            var orderInDatabase = await orderRepository.GetAsync(order.Id);
-            Assert.Equal(orderInDatabase, order);
+            //Act-Assert
+            action.Should().ThrowExactly<ArgumentNullException>();
         }
 
         [Fact]
         public async Task WhenUpdatingOrder_AndOrderIsHaveChanges_AndOrderStatusWillBeChanged_ThenMethodShouldBeUpdateOrder()
         {
             //Arrange
-            var databaseContext = new DbContextOptionsBuilder<ApplicationDatabaseContext>()
-                .UseNpgsql(_postgreSqlContainer.GetConnectionString(), options =>
-                {
-                    options.MigrationsAssembly("DeliveryApp.Infrastructure");
-                })
-                .Options;
+            var order = Order.Create(Guid.NewGuid(), Location.Create(2, 3).Value, 10).Value;
+            var courier = Courier.Create(1, "Slow Man", Location.Create(9, 9).Value).Value;
 
-            var dbContext2 = new ApplicationDatabaseContext(databaseContext);
-
-            var orderRepositoryWithNewDbContext = new OrderRepository(dbContext2);
-            var unitOfWorkWithNewDbContext = new UnitOfWork(dbContext2);
-
-            var unitOfWork = new UnitOfWork(_databaseContext);
-            var orderRepository = new OrderRepository(_databaseContext);
-
-            var orderX = 2;
-            var orderY = 3;
-            var orderTotalVolume = 10;
-            var orderId = Guid.NewGuid();
-            var orderLocation = Location.Create(orderX, orderY).Value;
-            var order = Order.Create(orderId, orderLocation, orderTotalVolume).Value;
-
-            var courierX = 9;
-            var courierY = 9;
-            var location = Location.Create(courierX, courierY).Value;
-
-            var courierSpeed = 1;
-            var courierName = "Slow Man";
-            var courier = Courier.Create(courierSpeed, courierName, location).Value;
-
-            await orderRepository.AddAsync(order);
-            await unitOfWork.SaveChangesAsync();
+            await ExecuteInNewDatabaseContextAsync(async (repository, unitOfWork) =>
+            {
+                await repository.AddAsync(order);
+                await unitOfWork.SaveChangesAsync();
+            }, _postgreSqlContainer);
 
             //Act
-            order.Assign(courier);
-
-            orderRepositoryWithNewDbContext.Update(order);
-
-            await unitOfWorkWithNewDbContext.SaveChangesAsync();
+            await ExecuteInNewDatabaseContextAsync(async (repository, unitOfWork) =>
+            {
+                order.Assign(courier);
+                repository.Update(order);
+                await unitOfWork.SaveChangesAsync();
+            }, _postgreSqlContainer);
 
             //Assert
-            var orderInDatabase = await orderRepositoryWithNewDbContext.GetAsync(order.Id);
-            Assert.Equal("assigned", orderInDatabase.Value.Status.Name);
+            var getOrderByIdResult = await Repository.GetByIdAsync(order.Id);
+            getOrderByIdResult.Value.Status.Name.Should().Be("assigned");
         }
     }
 }

@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Text;
-using System;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.EntityConfigurations.OrderAggregate
 {

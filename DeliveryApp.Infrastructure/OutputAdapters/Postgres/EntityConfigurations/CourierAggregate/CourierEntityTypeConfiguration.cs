@@ -1,13 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using DeliveryApp.Core.Domain.Model.CourierAggregate;
-using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Text;
-using System;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.EntityConfigurations.CourierAggregate
 {
@@ -45,6 +38,5 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.EntityConfiguration
 
             entityTypeBuilder.Navigation(entity => entity.Location).IsRequired();
         }
-
     }
 }

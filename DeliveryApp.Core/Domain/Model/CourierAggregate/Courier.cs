@@ -1,9 +1,10 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
+using Primitives;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design.Serialization;
 using System.Diagnostics.CodeAnalysis;
-using CSharpFunctionalExtensions;
-using Primitives;
 
 namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 {
@@ -32,24 +33,32 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         public static Result<Courier, Error> Create(int courierSpeed, string courierName, Location courierLocation)
         {
             if (string.IsNullOrWhiteSpace(courierName))
+            {
                 return GeneralErrors.ValueIsRequired(nameof(courierName));
+            }
 
             if (courierSpeed <= 0)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(courierSpeed));
+            }
 
             if (courierLocation == null)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(courierLocation));
+            }
 
             return new Courier(courierSpeed, courierName, courierLocation);
         }
 
         public Result<UnitResult<Error>, Error> AddNewStoragePlace(string storageName, int storageVolume)
         {
-            if (StoragePlace.Create(storageName, storageVolume) is var createStorageResult && createStorageResult.IsFailure)
+            if (StoragePlace.Create(storageName, storageVolume) is 
+                var createStorageResult && createStorageResult.IsFailure)
+            {
                 return GeneralErrors.StorageCannotBeCreated(createStorageResult.Error);
+            }
 
             StoragePlaces.Add(createStorageResult.Value);
-            StoragePlaces.TrimExcess();
 
             return UnitResult.Success<Error>();
         }
@@ -58,8 +67,15 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         {
             foreach (var storage in StoragePlaces.Select(storage => storage.IsOrderCorrectForAdd(order)))
             {
-                if (storage.IsFailure) return GeneralErrors.IsCourierCanTakeOrderError(storage.Error);
-                if (storage.Value) return true;
+                if (storage.IsFailure)
+                {
+                    return GeneralErrors.IsCourierCanTakeOrderError(storage.Error);
+                }
+
+                if (storage.Value)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -67,13 +83,19 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 
         public UnitResult<Error> TakeOrder(Order order)
         {
-            if (IsCanTakeOrder(order) is var takeOrderResult && (takeOrderResult.IsFailure || !takeOrderResult.Value))
+            if (IsCanTakeOrder(order) is 
+                var takeOrderResult && (takeOrderResult.IsFailure || !takeOrderResult.Value))
+            {
                 return GeneralErrors.TakeOrderError(takeOrderResult.IsFailure ? takeOrderResult.Error : null);
+            }
 
             foreach (var storage in StoragePlaces)
             {
-                if (storage.AddOrder(order) is var storeOrderResult && storeOrderResult.IsSuccess)
+                if (storage.AddOrder(order) is 
+                    var storeOrderResult && storeOrderResult.IsSuccess)
+                {
                     return UnitResult.Success<Error>();
+                }
             }
 
             return GeneralErrors.NotFoundMatchingStorageForStoreOrder();
@@ -82,15 +104,21 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         public Result<UnitResult<Error>, Error> FinishOrder(Guid orderId)
         {
             if (orderId == Guid.Empty)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(orderId));
+            }
 
-            if(StoragePlaces.Count == 0)
+            if (StoragePlaces.Count == 0)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(StoragePlaces.Count));
+            }
 
             var storagePlace = StoragePlaces.FirstOrDefault(order => order.OrderId == orderId);
-            
-            if(storagePlace == null)
+
+            if (storagePlace == null)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(storagePlace));
+            }
 
             storagePlace.RemoveOrder();
 
@@ -100,18 +128,25 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         public Result<double, Error> GetStepsCountToTargetLocation(Location targetLocation)
         {
             if (targetLocation == null)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
+            }
 
-            if (targetLocation.CalculateDistanceToTargetLocation(Location) is var calculateDistanceResult && calculateDistanceResult.IsFailure)
+            if (targetLocation.CalculateDistanceToTargetLocation(Location) is 
+                var calculateDistanceResult && calculateDistanceResult.IsFailure)
+            {
                 return GeneralErrors.CourierCannotCalculateDistanceToTargetLocation(calculateDistanceResult.Error);
+            }
 
             return (double)calculateDistanceResult.Value / Speed;
         }
 
         public UnitResult<Error> Move(Location targetLocation)
         {
-            if (targetLocation == null) 
+            if (targetLocation == null)
+            {
                 return GeneralErrors.ValueIsRequired(nameof(targetLocation));
+            }
 
             var offsetByX = targetLocation.X - Location.X;
             var offsetByY = targetLocation.Y - Location.Y;
