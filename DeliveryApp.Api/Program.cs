@@ -10,7 +10,12 @@ builder.Services.AddCourierDistributorService();
 builder.Services.AddCourierRepository();
 builder.Services.AddOrderRepository();
 builder.Services.AddUnitOfWork();
+builder.Services.AddAllActiveOrdersQuery(connectionString);
+builder.Services.AddAllBusyCouriersQuery(connectionString);
 builder.Services.AddDatabaseContext(connectionString);
+builder.Services.AddMoveCourierCommand();
+builder.Services.AddAssignOrderCommand();
+builder.Services.AddCreateOrderCommand();
 
 // Cors
 builder.Services.AddCors(options =>

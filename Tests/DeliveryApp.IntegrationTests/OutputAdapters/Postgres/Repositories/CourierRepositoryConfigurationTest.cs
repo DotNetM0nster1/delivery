@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 {
-    public class CourierRepositoryConfigurationTests
+    public class CourierRepositoryConfigurationTest
     {
         [Fact]
         public void CourierRepositoryShouldBePublic()

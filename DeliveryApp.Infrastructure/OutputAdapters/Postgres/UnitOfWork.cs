@@ -1,10 +1,5 @@
 ﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Text;
 using Primitives;
-using System;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres
 {
