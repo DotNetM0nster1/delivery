@@ -7,6 +7,6 @@ namespace DeliveryApp.Core.Domain.Services.Distribute
 {
     public interface ICourierDistributorService
     {
-        public Result<UnitResult<Error>, Error> DistributeOrderOnCouriers(Order order, List<Courier> couriers);
+        public Result<Courier, Error> DistributeOrderOnCouriers(Order order, List<Courier> couriers);
     }
 }

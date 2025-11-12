@@ -9,26 +9,8 @@ using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 {
-    public class CourierRepositoryTest : RepositoryBase<CourierRepository>, IAsyncLifetime
+    public class CourierRepositoryTest : RepositoryBase<CourierRepository>
     {
-        private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:14.7")
-            .WithDatabase("database")
-            .WithName("courier_repos")
-            .WithPassword("password")
-            .WithCleanUp(true)
-            .Build();
-
-        public async Task InitializeAsync()
-        {
-            await InitializeAsync(_postgreSqlContainer);
-        }
-
-        public async Task DisposeAsync()
-        {
-            await DisposeAsync(_postgreSqlContainer);
-        }
-
         [Fact]
         public async Task WhenAddingCourier_AndCourierIsNull_ThenMethodShouldBeThrowArgumentNullException()
         {
@@ -85,7 +67,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             {
                 await repository.AddRangeAsync([firstCourier, secondCourier]);
                 await unitOfWork.SaveChangesAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Act
             List<Courier> allFreeCouriersResult = null;
@@ -93,7 +75,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await ExecuteInNewDatabaseContextAsync(async (repository, unitOfWork) => 
             {
                 allFreeCouriersResult = await repository.GetAllFreeCouriersAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Assert
             allFreeCouriersResult.Count.Should().Be(2);
@@ -190,7 +172,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             {
                 await repository.AddAsync(courier);
                 await unitOfWork.SaveChangesAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Act
             Repository.Update(courier);
@@ -212,7 +194,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             {
                 await repository.AddAsync(courier);
                 await unitOfWork.SaveChangesAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Act
             await ExecuteInNewDatabaseContextAsync(async (repository, unitOfWork) =>
@@ -220,7 +202,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
                 courier.Move(Location.Create(1,2).Value);
                 repository.Update(courier);
                 await unitOfWork.SaveChangesAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Assert
             var courierInDb = await Repository.GetByIdAsync(courier.Id);

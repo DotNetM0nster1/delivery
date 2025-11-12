@@ -6,27 +6,33 @@ using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 {
-    public class RepositoryBase<TRepository>
+    public class RepositoryBase<TRepository> : IAsyncLifetime
     {
         private ApplicationDatabaseContext _databaseContext;
-
         protected TRepository Repository;
         protected UnitOfWork UnitOfWork;
 
-        public async Task InitializeAsync(PostgreSqlContainer postgreSqlContainer)
-        {
-            await postgreSqlContainer.StartAsync();
+        private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
+            .WithImage("postgres:14.7")
+            .WithDatabase("database")
+            .WithPassword("password")
+            .WithCleanUp(true)
+            .Build();
 
-            _databaseContext = CreateContext(postgreSqlContainer);
+        public async Task InitializeAsync()
+        {
+            await _postgreSqlContainer.StartAsync();
+
+            _databaseContext = CreateContext();
             Repository = (TRepository)Activator.CreateInstance(typeof(TRepository), _databaseContext);
             UnitOfWork = new UnitOfWork(_databaseContext);
 
             await _databaseContext.Database.MigrateAsync();
         }
 
-        protected async Task ExecuteInNewDatabaseContextAsync(Func<TRepository, UnitOfWork, Task> action, PostgreSqlContainer postgreSqlContainer)
+        protected async Task ExecuteInNewDatabaseContextAsync(Func<TRepository, UnitOfWork, Task> action)
         {
-            await using var databaseContext = CreateContext(postgreSqlContainer);
+            await using var databaseContext = CreateContext();
 
             var repository = (TRepository)Activator.CreateInstance(typeof(TRepository), databaseContext);
             var unitOfWork = new UnitOfWork(databaseContext);
@@ -34,20 +40,20 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await action.Invoke(repository, unitOfWork);
         }
 
-        private ApplicationDatabaseContext CreateContext(PostgreSqlContainer postgreSqlContainer)
+        private ApplicationDatabaseContext CreateContext()
         {
             var contextOptions = new DbContextOptionsBuilder<ApplicationDatabaseContext>()
                 .UseNpgsql(
-                    postgreSqlContainer.GetConnectionString(),
+                    _postgreSqlContainer.GetConnectionString(),
                     sqlOptions => { sqlOptions.MigrationsAssembly("DeliveryApp.Infrastructure"); }
                 ).Options;
 
             return new ApplicationDatabaseContext(contextOptions);
         }
 
-        public async Task DisposeAsync(PostgreSqlContainer postgreSqlContainer)
+        public async Task DisposeAsync()
         {
-            await postgreSqlContainer.DisposeAsync().AsTask();
+            await _postgreSqlContainer.DisposeAsync().AsTask();
             await _databaseContext.DisposeAsync();
         }
     }

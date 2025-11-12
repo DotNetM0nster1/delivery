@@ -7,7 +7,7 @@ namespace DeliveryApp.Core.Domain.Services.Distribute
 {
     public sealed class CourierDistributorService : ICourierDistributorService
     {
-        public Result<UnitResult<Error>, Error> DistributeOrderOnCouriers(Order order, List<Courier> couriers)
+        public Result<Courier, Error> DistributeOrderOnCouriers(Order order, List<Courier> couriers)
         {
             if (order == null)
             {
@@ -37,7 +37,7 @@ namespace DeliveryApp.Core.Domain.Services.Distribute
                 return GeneralErrors.OrderCannotBeDistributedError(takingOrderResult.Error);
             }
 
-            return UnitResult.Success<Error>();
+            return situableCourierResult.Value;
         }
 
         private Result<Courier, Error> GetMostSituableCourierForOrder(List<Courier> couriers, Order order)

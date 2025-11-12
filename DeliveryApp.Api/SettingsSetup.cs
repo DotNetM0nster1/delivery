@@ -1,5 +1,5 @@
-using DeliveryApp.Infrastructure;
 using Microsoft.Extensions.Options;
+using DeliveryApp.Infrastructure;
 
 namespace DeliveryApp.Api;
 

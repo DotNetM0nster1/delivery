@@ -1,4 +1,4 @@
-﻿using DeliveryApp.Core.Application.UseCases.Queries.Courier.GetAllBusyCouriers;
+﻿using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
 
 namespace DeliveryApp.Core.Ports
 {

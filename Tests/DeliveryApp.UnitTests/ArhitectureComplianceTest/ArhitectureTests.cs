@@ -1,8 +1,8 @@
-﻿using DeliveryApp.Core.Application.UseCases.Queries.Order.GetAllNotComplitedOrders;
-using DeliveryApp.Core.Application.UseCases.Queries.Courier.GetAllBusyCouriers;
-using DeliveryApp.Core.Application.UseCases.Commands.Courier.MoveCouriers;
-using DeliveryApp.Core.Application.UseCases.Commands.Order.AssignOrder;
-using DeliveryApp.Core.Application.UseCases.Commands.Order.CreateOrder;
+﻿using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
+using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
+using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Queries.Dto;
 using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
@@ -92,7 +92,7 @@ namespace DeliveryApp.UnitTests.ArhitectureComplianceTest
         public void MoveCouriersHandlerAssembly_ShouldntBeReference_OnInfrastructure()
         {
             var result = Types
-                .InAssembly(typeof(Core.Application.UseCases.Commands.Courier.MoveCouriers.MoveCouriersHandler).Assembly)
+                .InAssembly(typeof(MoveCouriersHandler).Assembly)
                 .ShouldNot()
                 .HaveDependencyOn(DeliveryInfrastructure)
                 .GetResult();

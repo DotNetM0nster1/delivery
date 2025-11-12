@@ -8,6 +8,6 @@ namespace DeliveryApp.Core.Application.UseCases.Queries.Dto
 
         public string Name { get; set; }
 
-        public Location Location { get; set; }
+        public LocationDto Location { get; set; }
     }
 }

@@ -1,8 +1,7 @@
-﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Queries.Courier.GetAllBusy;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Queries.Order.GetAllActive;
+﻿using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using DeliveryApp.Core.Application.UseCases.Commands.Courier.MoveCouriers;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
 using DeliveryApp.Core.Domain.Services.Distribute;
@@ -11,7 +10,8 @@ using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using Primitives;
 using MediatR;
-using DeliveryApp.Core.Application.UseCases.Commands.Order.AssignOrder;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
 
 namespace DeliveryApp.Api.Extensions
 {
@@ -39,12 +39,12 @@ namespace DeliveryApp.Api.Extensions
 
         public static IServiceCollection AddAllActiveOrdersQuery(this IServiceCollection services, string connectionString)
         {
-            return services.AddScoped<IAllActiveOrdersResult>(x => new AllActiveOrdersResult(connectionString));
+            return services.AddScoped<IAllActiveOrdersResult, AllActiveOrdersModelProvider>();
         }
 
-        public static IServiceCollection AddAllBusyCouriersQuery(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddAllBusyCouriersModelProvider(this IServiceCollection services, string connectionString)
         {
-            return services.AddScoped<IAllBusyCouriersModelProvider>(x => new AllBusyCouriersModelProvider(connectionString));
+            return services.AddScoped<IAllBusyCouriersModelProvider, AllBusyCouriersModelProvider>();
         }
 
         public static IServiceCollection AddMoveCourierCommand(this IServiceCollection services)

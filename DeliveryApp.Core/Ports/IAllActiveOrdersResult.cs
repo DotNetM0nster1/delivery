@@ -1,4 +1,4 @@
-﻿using DeliveryApp.Core.Application.UseCases.Queries.Order.GetAllNotComplitedOrders;
+﻿using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 
 namespace DeliveryApp.Core.Ports
 {

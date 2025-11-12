@@ -9,20 +9,8 @@ using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 {
-    public class OrderRepositoryTest : RepositoryBase<OrderRepository>, IAsyncLifetime 
+    public class OrderRepositoryTest : RepositoryBase<OrderRepository>
     {
-        private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:14.7")
-            .WithDatabase("database")
-            .WithName("order_repos")
-            .WithPassword("password")
-            .WithCleanUp(true)
-            .Build();
-
-        public async Task InitializeAsync() => await InitializeAsync(_postgreSqlContainer);
-
-        public async Task DisposeAsync() => await DisposeAsync(_postgreSqlContainer);
-
         [Fact]
         public async Task WhenAddingOrder_AndOrderIsNull_WhenMethodSholdBeThrowArgumentNullException()
         {
@@ -188,7 +176,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             {
                 await repository.AddAsync(order);
                 await unitOfWork.SaveChangesAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Act
             await ExecuteInNewDatabaseContextAsync(async (repository, unitOfWork) =>
@@ -196,7 +184,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
                 order.Assign(courier);
                 repository.Update(order);
                 await unitOfWork.SaveChangesAsync();
-            }, _postgreSqlContainer);
+            });
 
             //Assert
             var getOrderByIdResult = await Repository.GetByIdAsync(order.Id);
