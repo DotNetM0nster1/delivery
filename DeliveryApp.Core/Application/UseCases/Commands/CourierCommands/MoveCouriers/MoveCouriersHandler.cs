@@ -46,6 +46,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCou
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             return UnitResult.Success<Error>();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
-using MediatR;
 using Primitives;
+using MediatR;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers
 {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext
 {

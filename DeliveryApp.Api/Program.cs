@@ -1,5 +1,5 @@
-using DeliveryApp.Api;
 using DeliveryApp.Api.Extensions;
+using DeliveryApp.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration["CONNECTION_STRING"];

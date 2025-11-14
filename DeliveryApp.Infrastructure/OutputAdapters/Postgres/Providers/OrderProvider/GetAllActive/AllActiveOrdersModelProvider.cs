@@ -1,10 +1,10 @@
-﻿using DeliveryApp.Core.Application.UseCases.Queries.Dto;
+﻿using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
+using DeliveryApp.Core.Application.UseCases.Queries.Dto;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.Extensions.Options;
 using DeliveryApp.Core.Ports;
 using Npgsql;
 using Dapper;
-using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 
 namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive
 {

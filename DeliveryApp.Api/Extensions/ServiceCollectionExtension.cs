@@ -1,4 +1,6 @@
-﻿using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
+using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
@@ -10,8 +12,6 @@ using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using Primitives;
 using MediatR;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
 
 namespace DeliveryApp.Api.Extensions
 {

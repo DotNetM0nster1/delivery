@@ -1,10 +1,8 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using Primitives;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.Design.Serialization;
 using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
+using Primitives;
 
 namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 {
