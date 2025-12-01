@@ -59,6 +59,15 @@ public static class GeneralErrors
     }
 
     [ExcludeFromCodeCoverage]
+    public static Error DistributeOrderOnCouriersError(Error innerError = null)
+    {
+        return new Error(
+            "cant.distribute.order.on.courier",
+            "Cant distribute order on courier",
+            innerError);
+    }
+
+    [ExcludeFromCodeCoverage]
     public static Error IsCourierCanTakeOrderError(Error innerError = null)
     {
         return new Error(

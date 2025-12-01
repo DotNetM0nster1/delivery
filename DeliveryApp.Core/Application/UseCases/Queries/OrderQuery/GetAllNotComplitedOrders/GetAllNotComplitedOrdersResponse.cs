@@ -3,9 +3,9 @@ using MediatR;
 
 namespace DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders
 {
-    public sealed class GetAllNotComplitedOrdersRequest : IRequest<List<OrderDto>>
+    public sealed class GetAllNotComplitedOrdersResponse
     {
-        public GetAllNotComplitedOrdersRequest(List<OrderDto> orders) 
+        public GetAllNotComplitedOrdersResponse(List<OrderDto> orders) 
         {
             if (orders == null)
             { 

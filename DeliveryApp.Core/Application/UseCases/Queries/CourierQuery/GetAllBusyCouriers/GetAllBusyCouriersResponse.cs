@@ -3,9 +3,9 @@ using MediatR;
 
 namespace DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers
 {
-    public sealed class GetAllBusyCouriersRequest : IRequest<List<CourierDto>>
+    public sealed class GetAllBusyCouriersResponse
     {
-        public GetAllBusyCouriersRequest(List<CourierDto> couriers) 
+        public GetAllBusyCouriersResponse(List<CourierDto> couriers) 
         {
             if (couriers == null)
             { 

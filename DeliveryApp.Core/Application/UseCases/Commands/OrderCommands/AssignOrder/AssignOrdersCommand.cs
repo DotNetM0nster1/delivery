@@ -4,5 +4,5 @@ using MediatR;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder
 {
-    public sealed class AssignOrderCommand : IRequest<UnitResult<Error>>;
+    public sealed class AssignOrdersCommand : IRequest<UnitResult<Error>>;
 }

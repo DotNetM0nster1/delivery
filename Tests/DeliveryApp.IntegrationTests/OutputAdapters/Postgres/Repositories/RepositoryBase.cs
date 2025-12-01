@@ -1,5 +1,5 @@
-﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 using Xunit;

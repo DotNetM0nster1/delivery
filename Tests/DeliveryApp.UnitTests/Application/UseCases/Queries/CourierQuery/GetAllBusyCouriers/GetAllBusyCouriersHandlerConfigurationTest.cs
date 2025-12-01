@@ -1,6 +1,4 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
-using DeliveryApp.Core.Application.UseCases.Queries.Dto;
-using System.Collections.Generic;
 using DeliveryApp.Core.Ports;
 using System.Linq;
 using MediatR;
@@ -31,7 +29,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.CourierQuery.GetAll
         [Fact]
         public void GetAllBusyCouriersHandlerShouldBeSubClassOfIrequestUnitResultError()
         {
-            Assert.Contains(typeof(IRequestHandler<GetAllBusyCouriersRequest, List<CourierDto>>), typeof(GetAllBusyCouriersHandler).GetInterfaces());
+            Assert.Contains(typeof(IRequestHandler<GetAllBusyCouriersQuery, GetAllBusyCouriersResponse>), typeof(GetAllBusyCouriersHandler).GetInterfaces());
         }
 
         [Fact]

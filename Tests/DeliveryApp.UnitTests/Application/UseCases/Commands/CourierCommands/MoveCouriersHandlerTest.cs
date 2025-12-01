@@ -2,11 +2,12 @@
 using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
+using Microsoft.Extensions.Logging;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using System.Threading.Tasks;
-using System.Threading;
 using FluentAssertions;
+using System.Threading;
 using NSubstitute;
 using Primitives;
 using System;
@@ -16,6 +17,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.CourierCommands
 {
     public class MoveCouriersHandlerTest
     {
+        private readonly ILogger<MoveCouriersHandler> _loggerMock = Substitute.For<ILogger<MoveCouriersHandler>>();
         private readonly ICourierRepository _courierRepositoryMock = Substitute.For<ICourierRepository>();
         private readonly IOrderRepository _orderRepositoryMock = Substitute.For<IOrderRepository>();
         private readonly IUnitOfWork _unitOfWorkMock = Substitute.For<IUnitOfWork>();
@@ -23,24 +25,25 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.CourierCommands
 
         public MoveCouriersHandlerTest() 
         {
-            _moveCouriersHandler = new MoveCouriersHandler(_courierRepositoryMock, _orderRepositoryMock, _unitOfWorkMock);
+            _moveCouriersHandler = new MoveCouriersHandler(_courierRepositoryMock, _loggerMock, _orderRepositoryMock, _unitOfWorkMock);
         }
 
         [Fact]
-        public async Task WhenHandling_AndAssignedOrdersCount0_ThenMethodShouldBeThrowArgumentNullException()
+        public async Task WhenHandling_AndAssignedOrdersCount0_ThenMethodShouldBeReturnNotFoundError()
         {
             //Arrange
             var moveCourierCommand = new MoveCouriersCommand();
-            _orderRepositoryMock.GetAllAssignedAsync().Returns([]);
+            _orderRepositoryMock.GetAllAssignedOrdersAsync().Returns([]);
 
             //Act
-            Func<Task> func = async () =>
-            {
-                await _moveCouriersHandler.Handle(moveCourierCommand, CancellationToken.None); ;
-            };
+            var commandResult = await _moveCouriersHandler.Handle(moveCourierCommand, CancellationToken.None);
 
             //Assert
-            await func.Should().ThrowExactlyAsync<ArgumentNullException>();
+            commandResult.Should().NotBeNull();
+            commandResult.Error.Should().NotBeNull();
+            commandResult.IsFailure.Should().BeTrue();  
+            commandResult.Should().BeOfType<UnitResult<Error>>();
+            commandResult.Error.Code.Should().BeEquivalentTo("record.not.found");
         }
 
         [Fact]
@@ -51,13 +54,14 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.CourierCommands
             _courierRepositoryMock.GetByIdAsync(Guid.NewGuid()).Returns(Maybe<Courier>.None);
 
             //Act
-            Func<Task> func = async () =>
-            {
-                await _moveCouriersHandler.Handle(moveCourierCommand, CancellationToken.None); ;
-            };
+            var commandResult = await _moveCouriersHandler.Handle(moveCourierCommand, CancellationToken.None);
 
             //Assert
-            await func.Should().ThrowExactlyAsync<ArgumentNullException>();
+            commandResult.Should().NotBeNull();
+            commandResult.Error.Should().NotBeNull();
+            commandResult.IsFailure.Should().BeTrue();
+            commandResult.Should().BeOfType<UnitResult<Error>>();
+            commandResult.Error.Code.Should().BeEquivalentTo("record.not.found");
         }
 
         [Fact]
@@ -72,7 +76,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.CourierCommands
             order.Assign(courier);
 
             var moveCourierCommand = new MoveCouriersCommand();
-            _orderRepositoryMock.GetAllAssignedAsync().Returns([order]);
+            _orderRepositoryMock.GetAllAssignedOrdersAsync().Returns([order]);
             _courierRepositoryMock.GetByIdAsync(courier.Id).Returns(courier);
 
             //Act

@@ -1,16 +1,15 @@
-﻿using DeliveryApp.Core.Application.UseCases.Queries.Dto;
-using DeliveryApp.Core.Ports;
+﻿using DeliveryApp.Core.Ports;
 using MediatR;
 
 namespace DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders
 {
     public sealed class GetAllNotComplitedOrdersHandler(
         IAllActiveOrdersResult allActiveOrdersQuery) 
-        : IRequestHandler<GetAllNotComplitedOrdersRequest, List<OrderDto>>
+        : IRequestHandler<GetAllNotComplitedOrdersQuery, GetAllNotComplitedOrdersResponse>
     {
         private readonly IAllActiveOrdersResult _allActiveOrdersResult = allActiveOrdersQuery;
 
-        public async Task<List<OrderDto>> Handle(GetAllNotComplitedOrdersRequest request, CancellationToken cancellationToken)
+        public async Task<GetAllNotComplitedOrdersResponse> Handle(GetAllNotComplitedOrdersQuery request, CancellationToken cancellationToken)
         {
             if (await _allActiveOrdersResult.GetAllActiveAsync() is
                 var allActiveOrders && allActiveOrders == null || allActiveOrders.Orders.Count == 0)
@@ -18,7 +17,7 @@ namespace DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComp
                 throw new ArgumentNullException(nameof(allActiveOrders));
             }
 
-            return allActiveOrders.Orders;
+            return new GetAllNotComplitedOrdersResponse(allActiveOrders.Orders);
         }
     }
 }

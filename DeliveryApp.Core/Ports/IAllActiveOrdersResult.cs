@@ -4,6 +4,6 @@ namespace DeliveryApp.Core.Ports
 {
     public interface IAllActiveOrdersResult
     {
-        public Task<GetAllNotComplitedOrdersRequest> GetAllActiveAsync();
+        public Task<GetAllNotComplitedOrdersResponse> GetAllActiveAsync();
     }
 }

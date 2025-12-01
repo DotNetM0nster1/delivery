@@ -1,4 +1,5 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
+using Microsoft.Extensions.Logging;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using System.Linq;
@@ -46,10 +47,11 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.CourierCommands
                 {
                     var parameters = c.GetParameters();
 
-                    return parameters.Length == 3 &&
+                    return parameters.Length == 4 &&
                            parameters[0].ParameterType == typeof(ICourierRepository) &&
-                           parameters[1].ParameterType == typeof(IOrderRepository) &&
-                           parameters[2].ParameterType == typeof(IUnitOfWork);
+                           parameters[1].ParameterType == typeof(ILogger<MoveCouriersHandler>) &&
+                           parameters[2].ParameterType == typeof(IOrderRepository) &&
+                           parameters[3].ParameterType == typeof(IUnitOfWork);
                 });
 
             Assert.NotNull(constructor);

@@ -104,7 +104,7 @@ namespace DeliveryApp.UnitTests.ArhitectureComplianceTest
         public void AssignOrderCommandAssembly_ShouldntBeReference_OnInfrastructure()
         {
             var result = Types
-                .InAssembly(typeof(AssignOrderCommand).Assembly)
+                .InAssembly(typeof(AssignOrdersCommand).Assembly)
                 .ShouldNot()
                 .HaveDependencyOn(DeliveryInfrastructure)
                 .GetResult();
@@ -116,7 +116,7 @@ namespace DeliveryApp.UnitTests.ArhitectureComplianceTest
         public void AssignOrderHandlerAssembly_ShouldntBeReference_OnInfrastructure()
         {
             var result = Types
-                .InAssembly(typeof(AssignOrderHandler).Assembly)
+                .InAssembly(typeof(AssignOrdersHandler).Assembly)
                 .ShouldNot()
                 .HaveDependencyOn(DeliveryInfrastructure)
                 .GetResult();
@@ -164,7 +164,7 @@ namespace DeliveryApp.UnitTests.ArhitectureComplianceTest
         public void GetAllBusyCouriersRequestAssembly_ShouldntBeReference_OnInfrastructure()
         {
             var result = Types
-                .InAssembly(typeof(GetAllBusyCouriersRequest).Assembly)
+                .InAssembly(typeof(GetAllBusyCouriersResponse).Assembly)
                 .ShouldNot()
                 .HaveDependencyOn(DeliveryInfrastructure)
                 .GetResult();
@@ -224,7 +224,7 @@ namespace DeliveryApp.UnitTests.ArhitectureComplianceTest
         public void GetAllNotComplitedOrdersRequestAssembly_ShouldntBeReference_OnInfrastructure()
         {
             var result = Types
-                .InAssembly(typeof(GetAllNotComplitedOrdersRequest).Assembly)
+                .InAssembly(typeof(GetAllNotComplitedOrdersResponse).Assembly)
                 .ShouldNot()
                 .HaveDependencyOn(DeliveryInfrastructure)
                 .GetResult();

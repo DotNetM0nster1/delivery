@@ -9,9 +9,9 @@ namespace DeliveryApp.Core.Ports
 
         public Task<Maybe<Order>> GetByIdAsync(Guid id);
 
-        public Task<Maybe<Order>> GetFirstWithCreatedStatusAsync();
+        public Task<Maybe<Order>> GetFirstOrderWithCreatedStatusAsync();
 
-        public Task<List<Order>> GetAllAssignedAsync();
+        public Task<List<Order>> GetAllAssignedOrdersAsync();
 
         public void Update(Order order);
     }

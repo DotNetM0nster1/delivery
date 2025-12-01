@@ -32,14 +32,14 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories
                 .FirstOrDefaultAsync(order => order.Id == orderId);
         }
 
-        public async Task<Maybe<Order>> GetFirstWithCreatedStatusAsync()
+        public async Task<Maybe<Order>> GetFirstOrderWithCreatedStatusAsync()
         {
             return await _databaseContext
                 .Orders
                 .FirstOrDefaultAsync(order => order.Status.Name == OrderStatus.Created.Name);
         }
 
-        public async Task<List<Order>> GetAllAssignedAsync()
+        public async Task<List<Order>> GetAllAssignedOrdersAsync()
         {
             return await _databaseContext
                 .Orders

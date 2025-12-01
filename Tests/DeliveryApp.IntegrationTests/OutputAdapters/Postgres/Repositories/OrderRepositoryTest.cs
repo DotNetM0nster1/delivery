@@ -1,10 +1,9 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
 using FluentAssertions;
-using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
@@ -46,7 +45,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             var order = Order.Create(Guid.NewGuid(), Location.Create(1, 1).Value, 5).Value;
 
             //Act-Assert
-            var getAllAssignedOrdersResult = await Repository.GetAllAssignedAsync();
+            var getAllAssignedOrdersResult = await Repository.GetAllAssignedOrdersAsync();
             getAllAssignedOrdersResult.Count.Should().Be(0);
         }
 
@@ -63,7 +62,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await UnitOfWork.SaveChangesAsync();
 
             //Act
-            var getAllAssignedOrdersResult = await Repository.GetAllAssignedAsync();
+            var getAllAssignedOrdersResult = await Repository.GetAllAssignedOrdersAsync();
 
             //Assert
             var assignedOrder = getAllAssignedOrdersResult.First();
@@ -129,7 +128,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await UnitOfWork.SaveChangesAsync();
 
             //Act
-            var getFirstOrderWithCreatedStatusResult = await Repository.GetFirstWithCreatedStatusAsync();
+            var getFirstOrderWithCreatedStatusResult = await Repository.GetFirstOrderWithCreatedStatusAsync();
 
             //Assert
             getFirstOrderWithCreatedStatusResult.HasNoValue.Should().BeTrue();
@@ -146,7 +145,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await UnitOfWork.SaveChangesAsync();
 
             //Act
-            var getFirstOrderWithCreatedStatusResult = await Repository.GetFirstWithCreatedStatusAsync();
+            var getFirstOrderWithCreatedStatusResult = await Repository.GetFirstOrderWithCreatedStatusAsync();
 
             //Assert
             getFirstOrderWithCreatedStatusResult.Value.Should().BeSameAs(order);

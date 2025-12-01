@@ -1,8 +1,6 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 using DeliveryApp.Core.Application.UseCases.Queries.Dto;
-using System.Collections.Generic;
 using FluentAssertions;
-using MediatR;
 using System;
 using Xunit;
 
@@ -13,25 +11,19 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.OrderQuery.GetAllNo
         [Fact]
         public void GetAllNotComplitedOrdersRequestShouldBePublic()
         {
-            Assert.True(typeof(GetAllNotComplitedOrdersRequest).IsPublic);
+            Assert.True(typeof(GetAllNotComplitedOrdersResponse).IsPublic);
         }
 
         [Fact]
         public void GetAllNotComplitedOrdersRequestShouldBeSeald()
         {
-            Assert.True(typeof(GetAllNotComplitedOrdersRequest).IsSealed);
+            Assert.True(typeof(GetAllNotComplitedOrdersResponse).IsSealed);
         }
 
         [Fact]
         public void GetAllNotComplitedOrdersRequestShouldBeClass()
         {
-            Assert.True(typeof(GetAllNotComplitedOrdersRequest).IsClass);
-        }
-
-        [Fact]
-        public void GetAllNotComplitedOrdersRequestShouldBeSubClassOfIrequestUnitResultError()
-        {
-            Assert.Contains(typeof(IRequest<List<OrderDto>>), typeof(GetAllNotComplitedOrdersRequest).GetInterfaces());
+            Assert.True(typeof(GetAllNotComplitedOrdersResponse).IsClass);
         }
 
         [Fact]
@@ -40,7 +32,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.OrderQuery.GetAllNo
             //Arrange
             Action action = () =>
             {
-                new GetAllNotComplitedOrdersRequest(null);
+                new GetAllNotComplitedOrdersResponse(null);
             };
 
             //Acr-Assert
@@ -51,7 +43,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.OrderQuery.GetAllNo
         public void WhenCreateGetAllBusyCouriersRequest_AndOrdersNotNull_ThenMethodShouldBeAddCouriersIntoList()
         {
             //Arrange
-            var getAllNotComplitedOrdersRequest = new GetAllNotComplitedOrdersRequest
+            var getAllNotComplitedOrdersRequest = new GetAllNotComplitedOrdersResponse
             ([
                 new OrderDto { Id = Guid.NewGuid(), Location = new LocationDto { X = 7, Y = 8} },
                 new OrderDto { Id = Guid.NewGuid(), Location = new LocationDto { X = 9, Y = 3} },

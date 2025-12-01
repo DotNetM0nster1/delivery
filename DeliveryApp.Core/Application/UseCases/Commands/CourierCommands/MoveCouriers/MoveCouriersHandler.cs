@@ -1,4 +1,7 @@
-﻿using CSharpFunctionalExtensions;
+﻿using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
+using Microsoft.Extensions.Logging;
+using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using Primitives;
 using MediatR;
@@ -6,21 +9,25 @@ using MediatR;
 namespace DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers
 {
     public sealed class MoveCouriersHandler(
-        ICourierRepository courierRepository, 
+        ICourierRepository courierRepository,
+        ILogger<MoveCouriersHandler> logger,
         IOrderRepository orderRepository,
         IUnitOfWork unitOfWork) 
         : IRequestHandler<MoveCouriersCommand, UnitResult<Error>>
     {
         private readonly ICourierRepository _courierRepository = courierRepository;
-        private readonly IOrderRepository _orderRepository = orderRepository; 
+        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly ILogger<MoveCouriersHandler> _logger = logger;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<UnitResult<Error>> Handle(MoveCouriersCommand request, CancellationToken cancellationToken)
         {
-            if (await _orderRepository.GetAllAssignedAsync() is
+            if (await _orderRepository.GetAllAssignedOrdersAsync() is
                 var allAssignedOrders && allAssignedOrders == null || allAssignedOrders.Count == 0)
             {
-                throw new ArgumentNullException(nameof(allAssignedOrders));    
+                _logger.LogWarning($"[{nameof(Handle)}] Not found orders with {nameof(OrderStatus.Assigned)} status");
+
+                return UnitResult.Failure(GeneralErrors.NotFound());
             }
 
             foreach (var assignedOrder in allAssignedOrders)

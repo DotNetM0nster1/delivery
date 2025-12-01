@@ -11,25 +11,25 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
         [Fact]
         public void AssignOrderCommandShouldBePublic()
         {
-            Assert.True(typeof(AssignOrderCommand).IsPublic);
+            Assert.True(typeof(AssignOrdersCommand).IsPublic);
         }
 
         [Fact]
         public void AssignOrderCommandShouldBeSeald()
         {
-            Assert.True(typeof(AssignOrderCommand).IsSealed);
+            Assert.True(typeof(AssignOrdersCommand).IsSealed);
         }
 
         [Fact]
         public void AssignOrderCommandShouldBeClass()
         {
-            Assert.True(typeof(AssignOrderCommand).IsClass);
+            Assert.True(typeof(AssignOrdersCommand).IsClass);
         }
 
         [Fact]
         public void AssignOrderCommandShouldBeSubClassOfIrequestUnitResultError()
         {
-            Assert.Contains(typeof(IRequest<UnitResult<Error>>), typeof(AssignOrderCommand).GetInterfaces());
+            Assert.Contains(typeof(IRequest<UnitResult<Error>>), typeof(AssignOrdersCommand).GetInterfaces());
         }
     }
 }

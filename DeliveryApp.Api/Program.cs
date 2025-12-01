@@ -13,9 +13,15 @@ builder.Services.AddUnitOfWork();
 builder.Services.AddAllActiveOrdersQuery(connectionString);
 builder.Services.AddAllBusyCouriersModelProvider(connectionString);
 builder.Services.AddDatabaseContext(connectionString);
+builder.Services.AddMediator();
+builder.Services.AddGetAllNotComplitedOrdersQuery();
+builder.Services.AddGetAllBusyCouriersQuery();
 builder.Services.AddMoveCourierCommand();
 builder.Services.AddAssignOrderCommand();
 builder.Services.AddCreateOrderCommand();
+builder.Services.AddCronJobs();
+builder.Services.AddHttpHandlers();
+builder.Services.AddSwagger();
 
 // Cors
 builder.Services.AddCors(options =>
@@ -47,5 +53,19 @@ app.UseRouting();
 //     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 //     db.Database.Migrate();
 // }
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseSwagger(c => { c.RouteTemplate = "openapi/{documentName}/openapi.json"; })
+    .UseSwaggerUI(options =>
+    {
+        options.RoutePrefix = "openapi";
+        options.SwaggerEndpoint("/openapi/1.0.0/openapi.json", "Swagger Delivery Service");
+        options.RoutePrefix = string.Empty;
+        options.SwaggerEndpoint("/openapi-original.json", "Swagger Delivery Service");
+    });
+
+app.UseCors();
+app.UseEndpoints(endpoints => { _ = endpoints.MapControllers(); });
 
 app.Run();

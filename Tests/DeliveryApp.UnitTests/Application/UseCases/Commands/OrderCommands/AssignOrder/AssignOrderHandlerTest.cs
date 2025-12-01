@@ -3,6 +3,7 @@ using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Services.Distribute;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
+using Microsoft.Extensions.Logging;
 using CSharpFunctionalExtensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,52 +20,55 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
     public class AssignOrderHandlerTest
     {
         private readonly ICourierDistributorService _courierDistributorServiceMock = Substitute.For<ICourierDistributorService>();
+        private readonly ILogger<AssignOrdersHandler> _loggerMock = Substitute.For<ILogger<AssignOrdersHandler>>();
         private readonly ICourierRepository _courierRepositoryMock = Substitute.For<ICourierRepository>();
         private readonly IOrderRepository _orderRepositoryMock = Substitute.For<IOrderRepository>();
         private readonly IUnitOfWork _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-        private readonly AssignOrderHandler _assignOrderHandler;
+        private readonly AssignOrdersHandler _assignOrderHandler;
 
-        private AssignOrderCommand _command => new AssignOrderCommand();
+        private AssignOrdersCommand _command => new AssignOrdersCommand();
 
         public AssignOrderHandlerTest()
         {
-            _assignOrderHandler = new AssignOrderHandler(_courierDistributorServiceMock, _courierRepositoryMock, _orderRepositoryMock, _unitOfWorkMock);
+            _assignOrderHandler = new AssignOrdersHandler(_courierDistributorServiceMock, _courierRepositoryMock, _loggerMock, _orderRepositoryMock, _unitOfWorkMock);
         }
 
         [Fact]
-        public async Task WhenHandling_AndNotExistOrderWithCreatedStatus_ThenMethodSouldBeThrowArgumentNullException()
+        public async Task WhenHandling_AndNotExistOrderWithCreatedStatus_ThenMethodSouldBeReturnNotFoundError()
         {
             //Arrange
-            _orderRepositoryMock.GetFirstWithCreatedStatusAsync().Returns(Maybe<Order>.None);
+            _orderRepositoryMock.GetFirstOrderWithCreatedStatusAsync().Returns(Maybe<Order>.None);
 
             //Act
-            Func<Task> func = async () =>
-            {
-                await _assignOrderHandler.Handle(_command, CancellationToken.None);
-            };
+            var commandResult = await _assignOrderHandler.Handle(_command, CancellationToken.None);
 
             //Assert
-            await func.Should().ThrowExactlyAsync<ArgumentNullException>();
+            commandResult.Should().NotBeNull();
+            commandResult.Error.Should().NotBeNull();
+            commandResult.IsFailure.Should().BeTrue();
+            commandResult.Should().BeOfType<UnitResult<Error>>();
+            commandResult.Error.Code.Should().BeEquivalentTo("value.not.found");
         }
 
         [Fact]
-        public async Task WhenHandling_AndNotExistFreeCouriers_ThenMethodSouldBeThrowArgumentNullException()
+        public async Task WhenHandling_AndNotExistFreeCouriers_ThenMethodSouldBeReturnNotFoundError()
         {
             //Arrange
             var orderid = Guid.NewGuid();
             var order = Order.Create(orderid, Location.Create(3, 6).Value, 5).Value;
 
-            _orderRepositoryMock.GetFirstWithCreatedStatusAsync().Returns(order);
+            _orderRepositoryMock.GetFirstOrderWithCreatedStatusAsync().Returns(order);
             _courierRepositoryMock.GetAllFreeCouriersAsync().Returns([]);
 
             //Act
-            Func<Task> func = async () =>
-            {
-                await _assignOrderHandler.Handle(_command, CancellationToken.None);
-            };
+            var commandResult = await _assignOrderHandler.Handle(_command, CancellationToken.None);
 
             //Assert
-            await func.Should().ThrowExactlyAsync<ArgumentNullException>();
+            commandResult.Should().NotBeNull();
+            commandResult.Error.Should().NotBeNull();
+            commandResult.IsFailure.Should().BeTrue();
+            commandResult.Should().BeOfType<UnitResult<Error>>();
+            commandResult.Error.Code.Should().BeEquivalentTo("value.not.found");
         }
 
         [Fact]
@@ -74,7 +78,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
             List<Courier> couriers = [Courier.Create(3, "Danil Kilov", Location.Create(3, 8).Value).Value];
             var order = Order.Create(Guid.NewGuid(), Location.Create(5, 1).Value, 3).Value;
 
-            _orderRepositoryMock.GetFirstWithCreatedStatusAsync().Returns(order);
+            _orderRepositoryMock.GetFirstOrderWithCreatedStatusAsync().Returns(order);
             _courierRepositoryMock.GetAllFreeCouriersAsync().Returns(couriers);
 
             //Act

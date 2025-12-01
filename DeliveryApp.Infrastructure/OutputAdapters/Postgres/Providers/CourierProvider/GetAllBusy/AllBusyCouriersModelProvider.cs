@@ -11,7 +11,7 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierPr
     {
         private readonly IOptions<Settings> _options = options;
 
-        public async Task<GetAllBusyCouriersRequest> GetAllBusyCouriersAsync()
+        public async Task<GetAllBusyCouriersResponse> GetAllBusyCouriersAsync()
         {
             using var connection = new NpgsqlConnection(_options.Value.ConnectionString);
             connection.Open();
@@ -33,7 +33,7 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierPr
             },
             splitOn: nameof(LocationDto.X));
 
-            return new GetAllBusyCouriersRequest(allBusyCouriers.ToList());
+            return new GetAllBusyCouriersResponse(allBusyCouriers.ToList());
         }
     }
 }

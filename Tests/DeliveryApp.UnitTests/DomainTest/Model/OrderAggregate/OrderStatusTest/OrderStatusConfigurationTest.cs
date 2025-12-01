@@ -1,5 +1,5 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+using CSharpFunctionalExtensions;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.DomainTest.Model.OrderAggregate.OrderStatusTest

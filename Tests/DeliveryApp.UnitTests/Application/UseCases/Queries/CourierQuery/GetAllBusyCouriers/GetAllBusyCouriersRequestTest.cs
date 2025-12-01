@@ -1,9 +1,7 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
 using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
 using DeliveryApp.Core.Application.UseCases.Queries.Dto;
-using System.Collections.Generic;
 using FluentAssertions;
-using MediatR;
 using System;
 using Xunit;
 
@@ -14,7 +12,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.CourierQuery.GetAll
         [Fact]
         public void GetAllBusyCouriersRequestShouldBePublic()
         {
-            Assert.True(typeof(GetAllBusyCouriersRequest).IsPublic);
+            Assert.True(typeof(GetAllBusyCouriersResponse).IsPublic);
         }
 
         [Fact]
@@ -26,13 +24,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.CourierQuery.GetAll
         [Fact]
         public void GetAllBusyCouriersRequestShouldBeClass()
         {
-            Assert.True(typeof(GetAllBusyCouriersRequest).IsClass);
-        }
-
-        [Fact]
-        public void GetAllBusyCouriersRequestShouldBeSubClassOfIrequestUnitResultError()
-        {
-            Assert.Contains(typeof(IRequest<List<CourierDto>>), typeof(GetAllBusyCouriersRequest).GetInterfaces());
+            Assert.True(typeof(GetAllBusyCouriersResponse).IsClass);
         }
 
         [Fact]
@@ -41,7 +33,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.CourierQuery.GetAll
             //Arrange
             Action action = () => 
             {
-                new GetAllBusyCouriersRequest(null);
+                new GetAllBusyCouriersResponse(null);
             };
 
             //Acr-Assert
@@ -52,7 +44,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.CourierQuery.GetAll
         public void WhenCreatingGetAllBusyCouriersRequest_AndCouriersNotNull_ThenMethodShouldBeAddCouriersIntoList()
         {
             //Arrange
-            var getAllBusyCouriersRequest = new GetAllBusyCouriersRequest
+            var getAllBusyCouriersRequest = new GetAllBusyCouriersResponse
             ([
                 new CourierDto { Id = Guid.NewGuid(), Location = new LocationDto { X = 7, Y = 8} },
                 new CourierDto { Id = Guid.NewGuid(), Location = new LocationDto { X = 9, Y = 3} },

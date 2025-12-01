@@ -12,7 +12,7 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProv
     {
         private readonly IOptions<Settings> _options = options;
 
-        public async Task<GetAllNotComplitedOrdersRequest> GetAllActiveAsync()
+        public async Task<GetAllNotComplitedOrdersResponse> GetAllActiveAsync()
         {
             using var connection = new NpgsqlConnection(_options.Value.ConnectionString);
             connection.Open();
@@ -34,7 +34,7 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProv
             },
             splitOn: nameof(LocationDto.X));
 
-            return new GetAllNotComplitedOrdersRequest(allActiveOrders.ToList());
+            return new GetAllNotComplitedOrdersResponse(allActiveOrders.ToList());
         }
     }
 }

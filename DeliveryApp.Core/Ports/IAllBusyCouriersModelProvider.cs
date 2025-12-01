@@ -4,6 +4,6 @@ namespace DeliveryApp.Core.Ports
 {
     public interface IAllBusyCouriersModelProvider
     {
-        public Task<GetAllBusyCouriersRequest> GetAllBusyCouriersAsync();
+        public Task<GetAllBusyCouriersResponse> GetAllBusyCouriersAsync();
     }
 }
