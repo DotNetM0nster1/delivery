@@ -1,8 +1,12 @@
-using DeliveryApp.Api.Extensions;
+using Clients.Geo;
 using DeliveryApp.Api;
+using DeliveryApp.Api.Extensions;
+using Grpc.Core;
+using Grpc.Net.Client.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration["CONNECTION_STRING"];
+var geoServiceGrpcHost = builder.Configuration["GEO_SERVICE_GRPC_HOST"];
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -22,6 +26,7 @@ builder.Services.AddCreateOrderCommand();
 builder.Services.AddCronJobs();
 builder.Services.AddHttpHandlers();
 builder.Services.AddSwagger();
+builder.Services.AddGrpcClient();
 
 // Cors
 builder.Services.AddCors(options =>
@@ -35,6 +40,41 @@ builder.Services.AddCors(options =>
 
 // Configuration
 builder.Services.ConfigureOptions<SettingsSetup>();
+
+builder.Services
+    .AddGrpcClient<Geo.GeoClient>(o =>
+    {
+        o.Address = new Uri(geoServiceGrpcHost!);
+    })
+    .ConfigureChannel(o =>
+    {
+        o.HttpHandler = new SocketsHttpHandler
+        {
+            PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+            KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+            KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+            EnableMultipleHttp2Connections = true
+        };
+        o.ServiceConfig = new ServiceConfig
+        {
+            MethodConfigs =
+            {
+                new MethodConfig
+                {
+                    Names = { MethodName.Default },
+                    RetryPolicy = new RetryPolicy
+                    {
+                        MaxAttempts = 5,
+                        InitialBackoff = TimeSpan.FromSeconds(1),
+                        MaxBackoff = TimeSpan.FromSeconds(5),
+                        BackoffMultiplier = 1.5,
+                        RetryableStatusCodes = { StatusCode.Unavailable }
+                    }
+                }
+            }
+        };
+    });
+
 var app = builder.Build();
 
 // -----------------------------------

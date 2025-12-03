@@ -1,29 +1,29 @@
-﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters;
-using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
-using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.OpenApi;
-using DeliveryApp.Api.InputAdapters.BackgroundJobs;
+﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
+using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
+using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
 using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
-using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
-using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
-using DeliveryApp.Core.Domain.Services.Distribute;
-using DeliveryApp.Core.Ports;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Converters;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.OpenApi;
+using DeliveryApp.Infrastructure.OutputAdapters.Grpc.GeoService;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Api.InputAdapters.BackgroundJobs;
+using DeliveryApp.Core.Domain.Services.Distribute;
 using Newtonsoft.Json.Serialization;
-using Primitives;
-using Quartz;
+using Microsoft.EntityFrameworkCore;
+using CSharpFunctionalExtensions;
+using Newtonsoft.Json.Converters;
+using Microsoft.OpenApi.Models;
+using DeliveryApp.Core.Ports;
 using System.Reflection;
+using Primitives;
+using MediatR;
+using Quartz;
 
 namespace DeliveryApp.Api.Extensions
 {
@@ -87,6 +87,11 @@ namespace DeliveryApp.Api.Extensions
         public static IServiceCollection AddGetAllBusyCouriersQuery(this IServiceCollection services)
         {
             return services.AddScoped<IRequestHandler<GetAllBusyCouriersQuery, GetAllBusyCouriersResponse>, GetAllBusyCouriersHandler>();
+        }
+
+        public static IServiceCollection AddGrpcClient(this IServiceCollection services)
+        {
+            return services.AddScoped<IGeoClient, GeoClient>();
         }
 
         public static IServiceCollection AddDatabaseContext(this IServiceCollection service, string connectionString)
