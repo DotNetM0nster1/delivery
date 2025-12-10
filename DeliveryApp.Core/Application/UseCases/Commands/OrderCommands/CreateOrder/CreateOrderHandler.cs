@@ -22,15 +22,15 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrd
         public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             if (await _geoClient.GetLocation(request.Street)
-                is var randomLocationResult && (randomLocationResult.IsFailure || randomLocationResult.Value == null))
+                is var locationResult && (locationResult.IsFailure || locationResult.Value == null))
             {
                 _logger.LogWarning($"[{nameof(Handle)}] Not found location by name {request.Street}");
                 return UnitResult.Failure(GeneralErrors.NotFound());
             }
 
-            var randomLocation = randomLocationResult.Value;    
+            var location = locationResult.Value;    
 
-            var createOrderResult = Order.Create(request.OrderId, randomLocation, request.Volume).Value;
+            var createOrderResult = Order.Create(request.OrderId, location, request.Volume).Value;
 
             await _orderRepository.AddAsync(createOrderResult);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -10,7 +10,6 @@ using NSubstitute;
 using Primitives;
 using System;
 using Xunit;
-using CSharpFunctionalExtensions;
 
 namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
 {
