@@ -1,4 +1,5 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
+using Microsoft.Extensions.Logging;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using System.Linq;
@@ -46,9 +47,11 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
                 {
                     var parameters = c.GetParameters();
 
-                    return parameters.Length == 2 &&
-                           parameters[0].ParameterType == typeof(IOrderRepository) &&
-                           parameters[1].ParameterType == typeof(IUnitOfWork);
+                    return parameters.Length == 4 &&
+                        parameters[0].ParameterType == typeof(ILogger<CreateOrderHandler>) &&
+                        parameters[1].ParameterType == typeof(IOrderRepository) &&
+                        parameters[2].ParameterType == typeof(IUnitOfWork) &&
+                        parameters[3].ParameterType == typeof(IGeoClient);
                 });
 
             Assert.NotNull(constructor);

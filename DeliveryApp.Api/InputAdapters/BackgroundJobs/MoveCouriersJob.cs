@@ -17,6 +17,7 @@ namespace DeliveryApp.Api.InputAdapters.BackgroundJobs
         public async Task Execute(IJobExecutionContext context)
         {
             var moveCourierToOrderCommand = new MoveCouriersCommand();
+
             await _mediator.Send(moveCourierToOrderCommand);
         }
     }

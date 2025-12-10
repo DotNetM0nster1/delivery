@@ -37,16 +37,6 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
             return new Location(x, y);
         }
 
-        public static Result<Location, Error> CreateRandomLocation()
-        {
-            var random = new Random();
-
-            var randomX = random.Next(MinCoordinateValue, MaxCoordinateValue + 1);
-            var randomY = random.Next(MinCoordinateValue, MaxCoordinateValue + 1);
-
-            return Create(randomX, randomY);
-        }
-
         public Result<int, Error> CalculateDistanceToTargetLocation(Location targetLocation)
         {
             if (targetLocation == null)

@@ -1,5 +1,5 @@
 ﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
-using DeliveryApp.Core.Domain.Model.SharedKernel;
+using Microsoft.Extensions.Logging;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using Primitives;
@@ -8,16 +8,27 @@ using MediatR;
 namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder
 {
     public sealed class CreateOrderHandler(
-        IOrderRepository databaseContext, 
-        IUnitOfWork unitOfWork) 
+        ILogger<CreateOrderHandler> logger,
+        IOrderRepository orderRepository, 
+        IUnitOfWork unitOfWork, 
+        IGeoClient geoClient) 
         : IRequestHandler<CreateOrderCommand, UnitResult<Error>>
     {
-        private readonly IOrderRepository _orderRepository = databaseContext;
+        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly ILogger<CreateOrderHandler> _logger = logger;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IGeoClient _geoClient = geoClient;
 
         public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var randomLocation = Location.CreateRandomLocation().Value;
+            if (await _geoClient.GetLocation(request.Street)
+                is var randomLocationResult && (randomLocationResult.IsFailure || randomLocationResult.Value == null))
+            {
+                _logger.LogWarning($"[{nameof(Handle)}] Not found location by name {request.Street}");
+                return UnitResult.Failure(GeneralErrors.NotFound());
+            }
+
+            var randomLocation = randomLocationResult.Value;    
 
             var createOrderResult = Order.Create(request.OrderId, randomLocation, request.Volume).Value;
 
