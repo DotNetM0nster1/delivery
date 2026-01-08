@@ -1,8 +1,8 @@
-using Clients.Geo;
-using DeliveryApp.Api;
-using DeliveryApp.Api.Extensions;
-using Grpc.Core;
 using Grpc.Net.Client.Configuration;
+using DeliveryApp.Api.Extensions;
+using DeliveryApp.Api;
+using Clients.Geo;
+using Grpc.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration["CONNECTION_STRING"];
