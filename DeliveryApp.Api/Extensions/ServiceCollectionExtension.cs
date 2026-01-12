@@ -89,7 +89,7 @@ namespace DeliveryApp.Api.Extensions
             return services.AddScoped<IRequestHandler<GetAllBusyCouriersQuery, GetAllBusyCouriersResponse>, GetAllBusyCouriersHandler>();
         }
 
-        public static IServiceCollection AddUpdateOrdersCommand(this IServiceCollection services)
+        public static IServiceCollection AddCreateOrdersCommand(this IServiceCollection services)
         {
             return services.AddScoped<IRequestHandler<CreateOrderCommand, UnitResult<Error>>, CreateOrderHandler>();
         }

@@ -21,7 +21,7 @@ builder.Services.AddGetAllBusyCouriersQuery();
 builder.Services.AddMoveCourierCommand();
 builder.Services.AddAssignOrderCommand();
 builder.Services.AddCreateOrderCommand();
-builder.Services.AddUpdateOrdersCommand();
+builder.Services.AddCreateOrdersCommand();
 builder.Services.AddMessageBroker(messageBrokerHost, topicName);
 builder.Services.AddCronJobs();
 builder.Services.AddHttpHandlers();
