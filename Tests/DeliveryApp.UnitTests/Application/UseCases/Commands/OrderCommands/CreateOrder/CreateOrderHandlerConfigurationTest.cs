@@ -1,9 +1,10 @@
-﻿using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder;
 using DeliveryApp.Core.Ports;
-using System.Linq;
-using Primitives;
 using MediatR;
+using Microsoft.Extensions.Logging;
+using Primitives;
+using System.Linq;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
@@ -46,9 +47,10 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
                 {
                     var parameters = c.GetParameters();
 
-                    return parameters.Length == 2 &&
-                           parameters[0].ParameterType == typeof(IOrderRepository) &&
-                           parameters[1].ParameterType == typeof(IUnitOfWork);
+                    return parameters.Length == 3 &&
+                           parameters[0].ParameterType == typeof(ILogger<CreateOrderHandler>) &&
+                           parameters[1].ParameterType == typeof(IOrderRepository) &&
+                           parameters[2].ParameterType == typeof(IUnitOfWork);
                 });
 
             Assert.NotNull(constructor);

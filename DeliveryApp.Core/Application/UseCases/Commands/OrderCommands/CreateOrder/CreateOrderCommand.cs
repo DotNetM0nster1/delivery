@@ -2,20 +2,23 @@
 using Primitives;
 using MediatR;
 
-namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder
+namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder
 {
-    public sealed class CreateOrderCommand : IRequest<UnitResult<Error>>
+    public sealed class CreateOrderCommand : IRequest<UnitResult<Error>> 
     {
-        public CreateOrderCommand(string street, Guid orderId, int volume)
+        public CreateOrderCommand(
+            Guid basketId, 
+            string street,
+            int volume)
         {
+            if (basketId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(basketId));            
+            }
+
             if (string.IsNullOrWhiteSpace(street))
             {
                 throw new ArgumentNullException(nameof(street));
-            }
-
-            if (orderId == Guid.Empty)
-            {
-                throw new ArgumentNullException(nameof(orderId));
             }
 
             if (volume <= 0)
@@ -23,15 +26,15 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrd
                 throw new ArgumentException(nameof(volume));
             }
 
-            OrderId = orderId;
+            BasketId = basketId;
             Street = street;
             Volume = volume;
         }
 
-        public string Street { get; }
+        public Guid BasketId { get; set; }
 
-        public Guid OrderId { get; }
+        public string Street { get; set; }
 
-        public int Volume { get; }
+        public int Volume { get; set; }
     }
 }

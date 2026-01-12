@@ -45,9 +45,13 @@
     </ItemGroup>
     <ItemGroup>
         <None Remove="InputAdapters\Kafka\BasketConfirmed\Contract.proto" />
+        <None Remove="InputAdapters\Kafka\ConsumerContract.proto" />
     </ItemGroup>
     <ItemGroup>
       <None Include="InputAdapters\Http\Contract\.openapi-generator\FILES" />
       <None Include="InputAdapters\Http\Contract\.openapi-generator\VERSION" />
+    </ItemGroup>
+    <ItemGroup>
+      <Protobuf Include="InputAdapters\Kafka\ConsumerContract.proto" />
     </ItemGroup>
 </Project>

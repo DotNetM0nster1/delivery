@@ -1,6 +1,6 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
-using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder;
 using DeliveryApp.Api.InputAdapters.Http.Contract.Controllers;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;

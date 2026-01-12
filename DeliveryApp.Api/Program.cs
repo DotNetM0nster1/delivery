@@ -3,6 +3,8 @@ using DeliveryApp.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration["CONNECTION_STRING"];
+var messageBrokerHost = builder.Configuration["MESSAGE_BROKER_HOST"];
+var topicName = "baskets.events";
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -19,6 +21,8 @@ builder.Services.AddGetAllBusyCouriersQuery();
 builder.Services.AddMoveCourierCommand();
 builder.Services.AddAssignOrderCommand();
 builder.Services.AddCreateOrderCommand();
+builder.Services.AddUpdateOrdersCommand();
+builder.Services.AddMessageBroker(messageBrokerHost, topicName);
 builder.Services.AddCronJobs();
 builder.Services.AddHttpHandlers();
 builder.Services.AddSwagger();

@@ -1,11 +1,11 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
-using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Controllers;
 using DeliveryApp.Core.Application.UseCases.Queries.Dto;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder;
 
 namespace DeliveryApp.Api.InputAdapters.Http.Contract.Controllers
 {
@@ -20,7 +20,7 @@ namespace DeliveryApp.Api.InputAdapters.Http.Contract.Controllers
 
         public override async Task<IActionResult> CreateOrder()
         {
-            var createOrderCommand = new CreateOrderCommand("no_existing_street", Guid.NewGuid(), 1);
+            var createOrderCommand = new CreateOrderCommand(Guid.NewGuid(), "no_existing_street", 1);
 
             var commandResult = await _mediator.Send(createOrderCommand);
 

@@ -3,9 +3,10 @@ using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.OpenApi;
 using DeliveryApp.Api.InputAdapters.BackgroundJobs;
+using DeliveryApp.Api.InputAdapters.Kafka;
 using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
-using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
+using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder;
 using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
 using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 using DeliveryApp.Core.Domain.Services.Distribute;
@@ -17,7 +18,6 @@ using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -87,6 +87,27 @@ namespace DeliveryApp.Api.Extensions
         public static IServiceCollection AddGetAllBusyCouriersQuery(this IServiceCollection services)
         {
             return services.AddScoped<IRequestHandler<GetAllBusyCouriersQuery, GetAllBusyCouriersResponse>, GetAllBusyCouriersHandler>();
+        }
+
+        public static IServiceCollection AddUpdateOrdersCommand(this IServiceCollection services)
+        {
+            return services.AddScoped<IRequestHandler<CreateOrderCommand, UnitResult<Error>>, CreateOrderHandler>();
+        }
+
+        public static IServiceCollection AddMessageBroker(this IServiceCollection services, string messageBrokerHost, string topicName)
+        { 
+            services.Configure<HostOptions>(options =>
+            {
+                options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+                options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+            });
+
+            var serviceProvider = services.BuildServiceProvider();
+            var mediator = serviceProvider.GetService<IMediator>();
+
+            services.AddHostedService(_ => new ConsumerService(mediator, messageBrokerHost, topicName));
+
+            return services;
         }
 
         public static IServiceCollection AddDatabaseContext(this IServiceCollection service, string connectionString)

@@ -25,10 +25,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Queries.OrderQuery.GetAllNo
         public async Task WhenHandling_AndNotExistActiveOrders_ThenMethodShouldThrowArgumentNullException()
         {
             //Arranger
-            var x = 6;
-            var y = 7;
             var orderId = Guid.NewGuid();
-            GetAllNotComplitedOrdersResponse request = null;
 
             _allActiveOrdersResultMock.GetAllActiveAsync().Returns((GetAllNotComplitedOrdersResponse)null);
 

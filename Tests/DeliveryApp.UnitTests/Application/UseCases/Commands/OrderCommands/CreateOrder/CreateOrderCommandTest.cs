@@ -1,4 +1,4 @@
-﻿using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder;
+﻿using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder;
 using CSharpFunctionalExtensions;
 using FluentAssertions;
 using Primitives;
@@ -48,7 +48,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
             //Act
             Action action = () =>
             {
-                new CreateOrderCommand(street, orderId, orderVolume);
+                new CreateOrderCommand(orderId, street, orderVolume);
             };
 
             //Assert
@@ -66,7 +66,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
             //Act
             Action action = () =>
             {
-                new CreateOrderCommand(street, orderId, orderVolume);
+                new CreateOrderCommand(orderId, street, orderVolume);
             };
 
             //Assert
@@ -92,7 +92,7 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
             //Act
             Action action = () =>
             {
-                new CreateOrderCommand(street, orderId, orderVolume);
+                new CreateOrderCommand(orderId, street, orderVolume);
             };
 
             //Assert
@@ -114,12 +114,11 @@ namespace DeliveryApp.UnitTests.Application.UseCases.Commands.OrderCommands
         {
             //Arrange
             var orderId = Guid.NewGuid();
-            var command = new CreateOrderCommand(street, orderId, orderVolume);
+            var command = new CreateOrderCommand(orderId, street, orderVolume);
 
             //Act-Assert
             command.Should().NotBeNull();
             command.Street.Should().Be(street);
-            command.OrderId.Should().Be(orderId);
             command.Volume.Should().Be(orderVolume);
         }
     }

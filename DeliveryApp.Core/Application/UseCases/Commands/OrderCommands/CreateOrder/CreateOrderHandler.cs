@@ -1,28 +1,39 @@
 ﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
+using Microsoft.Extensions.Logging;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Ports;
 using Primitives;
 using MediatR;
 
-namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.CreateOrder
+namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder
 {
     public sealed class CreateOrderHandler(
-        IOrderRepository databaseContext, 
+        ILogger<CreateOrderHandler> logger,
+        IOrderRepository orderRepository, 
         IUnitOfWork unitOfWork) 
         : IRequestHandler<CreateOrderCommand, UnitResult<Error>>
     {
-        private readonly IOrderRepository _orderRepository = databaseContext;
+        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly ILogger<CreateOrderHandler> _logger = logger;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             var randomLocation = Location.CreateRandomLocation().Value;
 
-            var createOrderResult = Order.Create(request.OrderId, randomLocation, request.Volume).Value;
+            if (Order.Create(request.BasketId, randomLocation, request.Volume) is 
+                var orderResult && orderResult.IsFailure)
+            {
+                _logger.LogError($"[{nameof(Handle)}] Cant create order");
+                
+                UnitResult.Failure(GeneralErrors.CreateOrderError(orderResult.Error));
+            }
 
-            await _orderRepository.AddAsync(createOrderResult);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var order = orderResult.Value;
+
+            await _orderRepository.AddAsync(order);
+            await _unitOfWork.SaveChangesAsync();
 
             return UnitResult.Success<Error>();
         }

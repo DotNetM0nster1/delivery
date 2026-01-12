@@ -17,7 +17,7 @@ public sealed class SettingsSetup : IConfigureOptions<Settings>
         options.ConnectionString = _configuration["CONNECTION_STRING"];
         options.GeoServiceGrpcHost = _configuration["GEO_SERVICE_GRPC_HOST"];
         options.MessageBrokerHost = _configuration["MESSAGE_BROKER_HOST"];
-        options.OrderStatusChangedTopic = _configuration["ORDER_STATUS_CHANGED_TOPIC"];
+        options.OrderUpdateTopic = _configuration["ORDER_STATUS_CHANGED_TOPIC"];
         options.BasketConfirmedTopic = _configuration["BASKET_CONFIRMED_TOPIC"];
     }
 }

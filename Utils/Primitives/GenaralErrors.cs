@@ -59,6 +59,15 @@ public static class GeneralErrors
     }
 
     [ExcludeFromCodeCoverage]
+    public static Error CreateOrderError(Error innerError = null)
+    {
+        return new Error(
+            "create.order.with.kafka,error",
+            "When creating order, error occured",
+            innerError);
+    }
+
+    [ExcludeFromCodeCoverage]
     public static Error DistributeOrderOnCouriersError(Error innerError = null)
     {
         return new Error(
