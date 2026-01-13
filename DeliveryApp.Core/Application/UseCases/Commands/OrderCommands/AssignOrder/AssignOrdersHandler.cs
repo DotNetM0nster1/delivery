@@ -25,7 +25,8 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrd
         public async Task<UnitResult<Error>> Handle(AssignOrdersCommand request, CancellationToken cancellationToken)
         {
             if (await _orderRepository.GetFirstOrderWithCreatedStatusAsync() is
-                var mayBeFirstOrderWithCreatedStatus && (mayBeFirstOrderWithCreatedStatus == null || mayBeFirstOrderWithCreatedStatus.HasNoValue))
+                var mayBeFirstOrderWithCreatedStatus && 
+                (mayBeFirstOrderWithCreatedStatus == null || mayBeFirstOrderWithCreatedStatus.HasNoValue))
             {
                 _logger.LogWarning($"[{nameof(Handle)}] Not found order with {nameof(OrderStatus.Created)} status");
 
@@ -54,6 +55,10 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrd
             _orderRepository.Update(firstOrderWithCreatedStatus);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation($"[{nameof(Handle)}] " +
+                $"Success assign order {firstOrderWithCreatedStatus.Id} " +
+                $"to courier {distributeResult.Value.Id}");
 
             return distributeResult;
         }

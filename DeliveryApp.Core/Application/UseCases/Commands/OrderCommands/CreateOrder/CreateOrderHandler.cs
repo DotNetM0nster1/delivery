@@ -35,6 +35,8 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrd
             await _orderRepository.AddAsync(order);
             await _unitOfWork.SaveChangesAsync();
 
+            _logger.LogInformation($"[{nameof(Handle)}] Success creating order for basket {request.BasketId}");
+
             return UnitResult.Success<Error>();
         }
     }
