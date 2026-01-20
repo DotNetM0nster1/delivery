@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using DeliveryApp.Infrastructure;
 using Testcontainers.PostgreSql;
+using NSubstitute;
+using MediatR;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Providers
 {
     public class ProviderBase<TProvider> : IAsyncLifetime
     {
+        protected IMediator Mediator = Substitute.For<IMediator>();
         protected ApplicationDatabaseContext DatabaseContext;
         protected TProvider ModelProvider;
         protected UnitOfWork UnitOfWork;
@@ -29,8 +32,9 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Providers
             var options = GetOptions(connectionString);
 
             ModelProvider = (TProvider)Activator.CreateInstance(typeof(TProvider), options);
+
             DatabaseContext = CreateContext();
-            UnitOfWork = new UnitOfWork(DatabaseContext);
+            UnitOfWork = new UnitOfWork(DatabaseContext, Mediator);
 
             await DatabaseContext.Database.MigrateAsync();
         }

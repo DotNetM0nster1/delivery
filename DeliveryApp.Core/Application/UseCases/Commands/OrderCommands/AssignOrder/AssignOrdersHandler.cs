@@ -58,7 +58,7 @@ namespace DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrd
 
             _logger.LogInformation($"[{nameof(Handle)}] " +
                 $"Success assign order {firstOrderWithCreatedStatus.Id} " +
-                $"to courier {distributeResult.Value.Id}");
+                $"to courier {distributeResult.Value?.Id}");
 
             return distributeResult;
         }

@@ -2,9 +2,10 @@ using DeliveryApp.Api.Extensions;
 using DeliveryApp.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+var loggerFactory = new LoggerFactory();
 var connectionString = builder.Configuration["CONNECTION_STRING"];
 var messageBrokerHost = builder.Configuration["MESSAGE_BROKER_HOST"];
-var topicName = "baskets.events";
+var basketEventTopicName = builder.Configuration["BASKET_EVENTS_TOPIC"];
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -12,8 +13,8 @@ builder.Services.AddCourierDistributorService();
 builder.Services.AddCourierRepository();
 builder.Services.AddOrderRepository();
 builder.Services.AddUnitOfWork();
-builder.Services.AddAllActiveOrdersQuery(connectionString);
-builder.Services.AddAllBusyCouriersModelProvider(connectionString);
+builder.Services.AddAllActiveOrdersQuery();
+builder.Services.AddAllBusyCouriersModelProvider();
 builder.Services.AddDatabaseContext(connectionString);
 builder.Services.AddMediator();
 builder.Services.AddGetAllNotComplitedOrdersQuery();
@@ -22,7 +23,10 @@ builder.Services.AddMoveCourierCommand();
 builder.Services.AddAssignOrderCommand();
 builder.Services.AddCreateOrderCommand();
 builder.Services.AddCreateOrdersCommand();
-builder.Services.AddMessageBroker(messageBrokerHost, topicName);
+builder.Services.AddMessageBroker(messageBrokerHost, basketEventTopicName);
+builder.Services.AddOrderCreateDomainEventHandler();
+builder.Services.AddOrderCompliteDomainEventHandler();
+builder.Services.AddMessageBusProducer();
 builder.Services.AddCronJobs();
 builder.Services.AddHttpHandlers();
 builder.Services.AddSwagger();

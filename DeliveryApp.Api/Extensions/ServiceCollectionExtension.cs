@@ -10,9 +10,12 @@ using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters;
 using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.OpenApi;
+using DeliveryApp.Core.Application.UseCases.DomainEventHandlers;
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Infrastructure.OutputAdapters.Kafka;
 using DeliveryApp.Api.InputAdapters.BackgroundJobs;
 using DeliveryApp.Core.Domain.Services.Distribute;
+using DeliveryApp.Core.Domain.DomainEvents;
 using DeliveryApp.Api.InputAdapters.Kafka;
 using Newtonsoft.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
@@ -49,12 +52,12 @@ namespace DeliveryApp.Api.Extensions
             return services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
-        public static IServiceCollection AddAllActiveOrdersQuery(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddAllActiveOrdersQuery(this IServiceCollection services)
         {
             return services.AddScoped<IAllActiveOrdersResult, AllActiveOrdersModelProvider>();
         }
 
-        public static IServiceCollection AddAllBusyCouriersModelProvider(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddAllBusyCouriersModelProvider(this IServiceCollection services)
         {
             return services.AddScoped<IAllBusyCouriersModelProvider, AllBusyCouriersModelProvider>();
         }
@@ -92,6 +95,21 @@ namespace DeliveryApp.Api.Extensions
         public static IServiceCollection AddCreateOrdersCommand(this IServiceCollection services)
         {
             return services.AddScoped<IRequestHandler<CreateOrderCommand, UnitResult<Error>>, CreateOrderHandler>();
+        }
+
+        public static IServiceCollection AddOrderCompliteDomainEventHandler(this IServiceCollection services)
+        {
+            return services.AddScoped<INotificationHandler<OrderCompletedDomainEvent>, OrderComplitedEventHandler>();
+        }
+
+        public static IServiceCollection AddOrderCreateDomainEventHandler(this IServiceCollection services)
+        {
+            return services.AddScoped<INotificationHandler<OrderCreatedDomainEvent>, OrderCreatedEventHandler>();
+        }
+
+        public static IServiceCollection AddMessageBusProducer(this IServiceCollection services)
+        {
+            return services.AddTransient<IMessageBusProducer, ProducerService>();
         }
 
         public static IServiceCollection AddMessageBroker(this IServiceCollection services, string messageBrokerHost, string topicName)

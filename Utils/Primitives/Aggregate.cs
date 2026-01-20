@@ -6,7 +6,7 @@ public abstract class Aggregate<TId>
     : Entity<TId>, IAggregateRoot where TId 
     : IComparable<TId>
 {
-    private readonly List<DomainEvent> _domainEvents = new();
+    private readonly static List<DomainEvent> _domainEvents = new();
 
     protected Aggregate(TId id) : base(id) { }
 
@@ -22,7 +22,7 @@ public abstract class Aggregate<TId>
         _domainEvents.Clear();
     }
 
-    protected void RaiseDomainEvent(DomainEvent domainEvent)
+    protected static void RaiseDomainEvent(DomainEvent domainEvent)
     {
         _domainEvents.Add(domainEvent);
     }

@@ -1,8 +1,9 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.DomainEvents;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
-using System.Diagnostics.CodeAnalysis;
-using CSharpFunctionalExtensions;
 using Primitives;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DeliveryApp.Core.Domain.Model.OrderAggregate
 {
@@ -44,7 +45,11 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
                 return GeneralErrors.ValueIsInvalid(nameof(volume));
             }
 
-            return new Order(orderId, location, volume);
+            var order = new Order(orderId, location, volume);
+
+            RaiseDomainEvent(new OrderCreatedDomainEvent(order));
+
+            return order;
         }
 
         public UnitResult<Error> Assign(Courier courier)
@@ -78,6 +83,8 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
             }
 
             Status = OrderStatus.Completed;
+
+            RaiseDomainEvent(new OrderCompletedDomainEvent(this));
 
             return UnitResult.Success<Error>();
         }

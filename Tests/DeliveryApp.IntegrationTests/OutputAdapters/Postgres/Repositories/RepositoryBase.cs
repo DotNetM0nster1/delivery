@@ -2,12 +2,15 @@
 using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
+using NSubstitute;
+using MediatR;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 {
     public class RepositoryBase<TRepository> : IAsyncLifetime
     {
+        protected IMediator Mediator = Substitute.For<IMediator>();
         private ApplicationDatabaseContext _databaseContext;
         protected TRepository Repository;
         protected UnitOfWork UnitOfWork;
@@ -25,7 +28,8 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
 
             _databaseContext = CreateContext();
             Repository = (TRepository)Activator.CreateInstance(typeof(TRepository), _databaseContext);
-            UnitOfWork = new UnitOfWork(_databaseContext);
+
+            UnitOfWork = new UnitOfWork(_databaseContext, Mediator);
 
             await _databaseContext.Database.MigrateAsync();
         }
@@ -35,7 +39,7 @@ namespace DeliveryApp.IntegrationTests.OutputAdapters.Postgres.Repositories
             await using var databaseContext = CreateContext();
 
             var repository = (TRepository)Activator.CreateInstance(typeof(TRepository), databaseContext);
-            var unitOfWork = new UnitOfWork(databaseContext);
+            var unitOfWork = new UnitOfWork(databaseContext, Mediator);
 
             await action.Invoke(repository, unitOfWork);
         }

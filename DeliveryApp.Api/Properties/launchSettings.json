@@ -11,7 +11,9 @@
         "GEO_SERVICE_GRPC_HOST": "http://localhost:5004",
         "MESSAGE_BROKER_HOST": "localhost:9092",
         "ORDER_STATUS_CHANGED_TOPIC": "order.status.changed",
-        "BASKET_CONFIRMED_TOPIC": "basket.confirmed"
+        "BASKET_CONFIRMED_TOPIC": "basket.confirmed",
+        "BASKET_EVENTS_TOPIC": "baskets.events",
+        "ORDER_EVENTS_TOPIC": "orders.events"
       }
     }
   }

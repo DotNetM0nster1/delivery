@@ -19,5 +19,6 @@ public sealed class SettingsSetup : IConfigureOptions<Settings>
         options.MessageBrokerHost = _configuration["MESSAGE_BROKER_HOST"];
         options.OrderUpdateTopic = _configuration["ORDER_STATUS_CHANGED_TOPIC"];
         options.BasketConfirmedTopic = _configuration["BASKET_CONFIRMED_TOPIC"];
+        options.OrderEventsTopic = _configuration["ORDER_EVENTS_TOPIC"];
     }
 }
