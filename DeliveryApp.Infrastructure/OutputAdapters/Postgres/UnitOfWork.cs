@@ -1,4 +1,6 @@
 ﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Entities;
+using Newtonsoft.Json;
 using Primitives;
 using MediatR;
 
@@ -6,34 +8,44 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres
 {
     public sealed class UnitOfWork(ApplicationDatabaseContext applicationContext, IMediator mediator) : IUnitOfWork
     {
-        private readonly ApplicationDatabaseContext _applicationContext = applicationContext;
+        private readonly ApplicationDatabaseContext _databaseContext = applicationContext;
         private readonly IMediator _mediator = mediator;
 
         public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await _applicationContext.SaveChangesAsync(cancellationToken);
-            await PublishDomainEventsAsync();
+            await SaveDomainEventsInOutboxAsync();
+            await _databaseContext.SaveChangesAsync(cancellationToken);
+
             return true;
         }
 
-        private async Task PublishDomainEventsAsync()
+        private async Task SaveDomainEventsInOutboxAsync()
         {
-            var domainEntities = _applicationContext
+            var outboxMessage = _databaseContext
                 .ChangeTracker
                 .Entries<IAggregateRoot>()
-                .Where(x => x.Entity.GetDomainEvents().Any());
+                .Select(x => x.Entity)
+                    .SelectMany(aggreagate =>
+                    {
+                        var domainEvents = aggreagate.GetDomainEvents();
+                        aggreagate.ClearDomainEvents();
+                        return domainEvents;
+                    })
+                    .Select(domainEvent => new OutboxMessage
+                    {
+                        Id = domainEvent.EventId,
+                        OccuredAtUtc = domainEvent.OccurredAt,
+                        Type = domainEvent.GetType().Name,
+                        Content = JsonConvert.SerializeObject(
+                            domainEvent,
+                            new JsonSerializerSettings
+                            {
+                                TypeNameHandling = TypeNameHandling.All,
+                            })
+                    })
+                .ToList();
 
-            var domaintEvents = domainEntities
-                .SelectMany(x => x.Entity.GetDomainEvents());
-
-            foreach (var domainEvent in domaintEvents)
-            {
-                await _mediator.Publish(domainEvent);
-            }
-
-            domainEntities
-                .ToList()
-                .ForEach(x => x.Entity.ClearDomainEvents());
+            await _databaseContext.Set<OutboxMessage>().AddRangeAsync(outboxMessage);
         }
     }
 }

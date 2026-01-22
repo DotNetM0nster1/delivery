@@ -1,32 +1,33 @@
-﻿using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
-using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
-using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
+using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.OpenApi;
+using DeliveryApp.Api.InputAdapters.BackgroundJobs;
+using DeliveryApp.Api.InputAdapters.Kafka;
 using DeliveryApp.Core.Application.UseCases.Commands.CourierCommands.MoveCouriers;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.AssignOrder;
 using DeliveryApp.Core.Application.UseCases.Commands.OrderCommands.ChangeOrder;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
-using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Formatters;
-using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.Filters;
-using DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi.OpenApi;
 using DeliveryApp.Core.Application.UseCases.DomainEventHandlers;
-using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
-using DeliveryApp.Infrastructure.OutputAdapters.Kafka;
-using DeliveryApp.Api.InputAdapters.BackgroundJobs;
-using DeliveryApp.Core.Domain.Services.Distribute;
+using DeliveryApp.Core.Application.UseCases.Queries.CourierQuery.GetAllBusyCouriers;
+using DeliveryApp.Core.Application.UseCases.Queries.OrderQuery.GetAllNotComplitedOrders;
 using DeliveryApp.Core.Domain.DomainEvents;
-using DeliveryApp.Api.InputAdapters.Kafka;
-using Newtonsoft.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using CSharpFunctionalExtensions;
-using Newtonsoft.Json.Converters;
-using Microsoft.OpenApi.Models;
+using DeliveryApp.Core.Domain.Services.Distribute;
 using DeliveryApp.Core.Ports;
-using System.Reflection;
-using Primitives;
+using DeliveryApp.Infrastructure.OutputAdapters.Kafka;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.BackgroundJobs;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.CourierProvider.GetAllBusy;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Providers.OrderProvider.GetAllActive;
+using DeliveryApp.Infrastructure.OutputAdapters.Postgres.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using Primitives;
 using Quartz;
+using System.Reflection;
 
 namespace DeliveryApp.Api.Extensions
 {
@@ -147,6 +148,7 @@ namespace DeliveryApp.Api.Extensions
             {
                 var assignOrdersJobKey = new JobKey(nameof(AssignOrdersJob));
                 var moveCouriersJobKey = new JobKey(nameof(MoveCouriersJob));
+                var outboxMessageJobKey = new JobKey(nameof(ProccessOutboxMessagesJob));
 
                 configure
                     .AddJob<AssignOrdersJob>(assignOrdersJobKey)
@@ -158,6 +160,11 @@ namespace DeliveryApp.Api.Extensions
                     .AddTrigger(trigger => trigger.ForJob(moveCouriersJobKey)
                         .WithSimpleSchedule(schedule => schedule
                         .WithIntervalInSeconds(2)
+                        .RepeatForever()))
+                    .AddJob<ProccessOutboxMessagesJob>(outboxMessageJobKey)
+                    .AddTrigger(trigger => trigger.ForJob(outboxMessageJobKey)
+                        .WithSimpleSchedule(schedule => schedule
+                        .WithIntervalInSeconds(50)
                         .RepeatForever()));
             });
 

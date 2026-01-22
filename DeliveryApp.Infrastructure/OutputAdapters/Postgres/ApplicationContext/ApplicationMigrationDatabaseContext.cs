@@ -9,7 +9,7 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.ApplicationContext
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDatabaseContext>();
 
-            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;User Id=username;Password=secret;Database=delivery;", op => 
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Username=postgres;Password=1;Database=Delivery;", op => 
             {
                 op.MigrationsAssembly("DeliveryApp.Infrastructure"); 
             });

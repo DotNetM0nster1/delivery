@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -42,6 +43,21 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "outbox",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    occured_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    processed_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    type = table.Column<string>(type: "text", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_outbox", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "storage_places",
                 columns: table => new
                 {
@@ -73,6 +89,9 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
         {
             migrationBuilder.DropTable(
                 name: "orders");
+
+            migrationBuilder.DropTable(
+                name: "outbox");
 
             migrationBuilder.DropTable(
                 name: "storage_places");

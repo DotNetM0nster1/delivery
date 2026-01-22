@@ -90,6 +90,36 @@ namespace DeliveryApp.Infrastructure.OutputAdapters.Postgres.Migrations
                     b.ToTable("orders", (string)null);
                 });
 
+            modelBuilder.Entity("DeliveryApp.Infrastructure.OutputAdapters.Postgres.Entities.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("OccuredAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occured_at_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("outbox", (string)null);
+                });
+
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", b =>
                 {
                     b.OwnsOne("DeliveryApp.Core.Domain.Model.SharedKernel.Location", "Location", b1 =>
